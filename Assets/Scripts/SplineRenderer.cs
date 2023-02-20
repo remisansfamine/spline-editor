@@ -1,3 +1,6 @@
+using System;
+using System.ComponentModel;
+using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer), typeof(SplineController))]
@@ -6,8 +9,9 @@ public class SplineRenderer : MonoBehaviour
     private LineRenderer lineRdr = null;
     private SplineController controller = null;
 
-    Matrix4x4 M = new Matrix4x4(new Vector4(2f, -2f, 1f, 1f), new Vector4(-3f, 3f, -2f, -1f), new Vector4(0f, 0f, 1f, 0f), new Vector4(1f, 0f, 0f, 0f));
-       
+    [SerializeField] private float positionDistance = 10f;
+    private float step = 0f;
+
     private void Awake()
     {
         lineRdr = GetComponent<LineRenderer>();
@@ -15,14 +19,18 @@ public class SplineRenderer : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        
+        step = 1f / positionDistance;
+        lineRdr.positionCount = Mathf.RoundToInt(step);
+
+        for (float quantity = 0f; quantity < 1f; quantity += positionDistance)
+        {
+            int PointId = (int)(lineRdr.positionCount * quantity);
+
+            Vector3 LinePoint = controller.EvaluateFromPolynomial(quantity);
+
+            lineRdr.SetPosition(PointId, LinePoint);
+        }
     }
 }
