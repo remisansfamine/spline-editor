@@ -17,6 +17,16 @@ public class SplineSceneEditor : Editor
 
     void Display(SplineController controller)
     {
+        Handles.color = Color.red;
+
+        for (int PointId = 0; PointId < controller.InputPoint.Count; PointId += 2)
+        {
+            Vector3 Position = controller.InputPoint[PointId + 0];
+            Vector3 Velocity = controller.InputPoint[PointId + 1];
+            Handles.DrawLine(Position, Velocity);
+
+        }
+
         Handles.color = Color.white;
 
         Vector3 StartPoint = controller.EvaluateFromPolynomial(0f);
