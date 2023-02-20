@@ -9,10 +9,10 @@ public class SplineSceneEditor : Editor
     void Input(SplineController controller)
     {
         for (int PointId = 0; PointId < controller.InputPoint.Count; PointId++)
-        {
-            controller.InputPoint[PointId] = Handles.DoPositionHandle(controller.InputPoint[PointId], Quaternion.identity);
-        }
+            controller.InputPoint[PointId] = Handles.FreeMoveHandle(controller.InputPoint[PointId], Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
 
+        if (GUI.changed)
+            EditorUtility.SetDirty(target);
     }
 
     void Display(SplineController controller)
