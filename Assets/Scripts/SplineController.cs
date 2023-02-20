@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SplineController : MonoBehaviour
 {
-    public List<Vector3> InputPoint = null;
+    public List<Vector3> InputPoint = new List<Vector3>();
 
-    Matrix4x4 M = new Matrix4x4(new Vector4(2f, -2f, 1f, 1f), new Vector4(-3f, 3f, -2f, -1f),
+    Matrix4x4 M = new Matrix4x4(new Vector4(2f,-2f, 1f, 1f), new Vector4(-3f, 3f,-2f,-1f),
                                 new Vector4(0f, 0f, 1f, 0f), new Vector4(1f, 0f, 0f, 0f));
 
     public int PositionCount => InputPoint.Count / 2;
