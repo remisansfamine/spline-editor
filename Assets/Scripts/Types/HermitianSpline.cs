@@ -8,6 +8,8 @@ public class HermitianSpline : SplineDescriptor
     Matrix4x4 M = new Matrix4x4(new Vector4(2f, -2f, 1f, 1f), new Vector4(-3f, 3f, -2f, -1f),
                                 new Vector4(0f, 0f, 1f, 0f), new Vector4(1f, 0f, 0f, 0f));
 
+    public override bool IsPointAKnot(int PointID) => PointID % 2 == 0;
+
     public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
     {
         GetT(u, inputPoints.Count, out float t, out int startingPoint);
@@ -24,14 +26,14 @@ public class HermitianSpline : SplineDescriptor
         return (2f * tCube - 3f * tSqr + 1f) * PointA + (-2f * tCube + 3f * tSqr) * PointB + (tCube - 2f * tSqr + t) * DerivA + (tCube - tSqr) * DerivB;
     }
 
-    public Vector3 EvaluateFromMatrix(float u, List<Vector3> inputPoints)
+    public override Vector3 EvaluateFromMatrix(float u, List<Vector3> inputPoints)
     {
         GetT(u, inputPoints.Count, out float t, out int startingPoint);
 
         // TODO: Remove extra copy
         List<Vector3> intervallePoints = inputPoints.GetRange(startingPoint, 4);
 
-        return Matrix4x4.Transpose(GetGeometryMatrix(intervallePoints)) * Matrix4x4.Transpose(M) * GetTimeVector(t);
+        return GetGeometryMatrix(intervallePoints) * M * GetTimeVector(t);
     }
 
     public Vector4 GetTimeVector(float time)
