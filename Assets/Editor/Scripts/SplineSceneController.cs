@@ -4,7 +4,7 @@ using UnityEngine;
 [CustomEditor(typeof(SplineController))]
 public class SplineSceneEditor : Editor
 {
-    [SerializeField] private float positionDistance = 0.1f;
+    [SerializeField] private float positionDistance = 0.01f;
 
     void Input(SplineController controller)
     {
