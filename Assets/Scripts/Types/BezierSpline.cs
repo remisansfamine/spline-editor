@@ -6,6 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BezierSpline", menuName = "Splines/BezierSpline", order = 1)]
 public class BezierSpline : SplineDescriptor
 {
+    public override bool IsPointAKnot(int PointID) => true;
+
     private static float Factorial(int input)
     {
         int fac = 1;
