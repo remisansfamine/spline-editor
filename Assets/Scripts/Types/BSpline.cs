@@ -6,8 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BSpline", menuName = "Splines/BSpline", order = 1)]
 public class BSpline : SplineDescriptor
 {
-    [SerializeField] private int controlPointsCount = 4;
-
     private static readonly Matrix4x4 CharacteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) / 6f,
                                                                            new Vector4( 3f,-6f, 3f, 0f) / 6f,
                                                                            new Vector4(-3f, 0f, 3f, 0f) / 6f,
@@ -49,7 +47,7 @@ public class BSpline : SplineDescriptor
     {
         GetLocalParameters(u, inputPoints.Count, out float t, out int startingPoint);
 
-        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, controlPointsCount);
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
 
         return LocalEvaluateFromPolynomial(t, intervalPoints);
     }
