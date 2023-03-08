@@ -422,7 +422,7 @@ PrefabInstance:
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: SplineFormula
       value: 
-      objectReference: {fileID: 11400000, guid: 8be3f4e64ad3aa04382242ad11576417, type: 2}
+      objectReference: {fileID: 11400000, guid: edf855f56e9dd104a86d2444291b0e4a, type: 2}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: InputPoint.Array.size
       value: 10
@@ -593,27 +593,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[2].x
-      value: -8.939096
+      value: -0.40920067
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[2].y
-      value: 0.4222641
+      value: -0.7918167
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[2].z
-      value: -41.763226
+      value: -48.01461
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[3].x
-      value: -0.22497177
+      value: -0.5184078
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[3].y
-      value: 0
+      value: 1.1881924
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[3].z
-      value: -35.941456
+      value: -30.173492
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[4].x
@@ -653,39 +653,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[7].x
-      value: 21.204174
+      value: 27.386082
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[7].y
-      value: 0.15441895
+      value: 1.8126202
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[7].z
-      value: -9.583963
+      value: 2.845375
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[8].x
-      value: 19.542019
+      value: 26.626621
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[8].y
-      value: 0
+      value: -0.52036905
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[8].z
-      value: -36.84408
+      value: -18.506426
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[9].x
-      value: 26.184797
+      value: 33.269432
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[9].y
-      value: 0
+      value: -0.52036905
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109854, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: inputPoint.Array.data[9].z
-      value: -37.245552
+      value: -18.907896
       objectReference: {fileID: 0}
     - target: {fileID: 6956333240878109855, guid: 6da326cf972f8f842bc3fb7ee7b94b16, type: 3}
       propertyPath: positionDistance
