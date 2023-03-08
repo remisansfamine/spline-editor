@@ -35,7 +35,13 @@ public class HermitianSpline : SplineDescriptor
         float tSqr = t * t;
         float tCube = tSqr * t;
 
-        return (2f * tCube - 3f * tSqr + 1f) * PointA + (-2f * tCube + 3f * tSqr) * PointB + (tCube - 2f * tSqr + t) * DerivA + (tCube - tSqr) * DerivB;
+
+        float a = 2f * tCube - 3f * tSqr + 1f;
+        float b = -2f * tCube + 3f * tSqr;
+        float c = tCube - 2f * tSqr + t;
+        float d = tCube - tSqr;
+
+        return a * PointA + b * PointB + c * DerivA + d * DerivB;
     }
 
     public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
