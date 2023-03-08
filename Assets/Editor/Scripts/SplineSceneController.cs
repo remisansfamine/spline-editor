@@ -19,16 +19,45 @@ public class SplineSceneEditor : Editor
             EditorUtility.SetDirty(target);
     }
 
-    void Display(SplineController controller)
+    void DisplayLinks(SplineController controller)
     {
         Handles.color = Color.red;
 
-        for (int PointId = 0; PointId < controller.InputPoint.Count; PointId += 2)
+        switch (controller.SplineFormula)
         {
-            Vector3 Position = controller.InputPoint[PointId + 0];
-            Vector3 Velocity = controller.InputPoint[PointId + 1];
-            Handles.DrawLine(Position, Velocity);
+            case HermitianSpline hermitian:
+                for (int PointId = 0; PointId < controller.InputPoint.Count; PointId += 2)
+                {
+                    Vector3 Position = controller.InputPoint[PointId + 0];
+                    Vector3 Velocity = controller.InputPoint[PointId + 1];
+                    Handles.DrawLine(Position, Velocity);
+                }
+                break;
+
+            case BezierSpline bezier:
+                for (int PointId = 0; PointId < controller.InputPoint.Count; PointId += 3)
+                {
+                    Vector3 Position = controller.InputPoint[PointId + 0];
+
+                    if (PointId > 0)
+                    {
+                        Vector3 PrevVelocity = controller.InputPoint[PointId - 1];
+                        Handles.DrawLine(Position, PrevVelocity);
+                    }
+
+                    if (PointId < controller.InputPoint.Count - 1)
+                    {
+                        Vector3 NextVelocity = controller.InputPoint[PointId + 1];
+                        Handles.DrawLine(Position, NextVelocity);
+                    }
+                }
+                break;
         }
+    }
+
+    void Display(SplineController controller)
+    {
+        DisplayLinks(controller);
 
         Handles.color = Color.white;
 

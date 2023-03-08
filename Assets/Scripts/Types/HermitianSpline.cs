@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,15 +6,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "HermitianSpline", menuName = "Splines/HermitianSpline", order = 1)]
 public class HermitianSpline : SplineDescriptor
 {
-    Matrix4x4 M = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
-                                new Vector4(-3f, 3f,-2f,-1f),
-                                new Vector4( 0f, 0f, 1f, 0f),
-                                new Vector4( 1f, 0f, 0f, 0f));
+    private static readonly Matrix4x4 CharacteristicMatrix = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
+                                                                           new Vector4(-3f, 3f,-2f,-1f),
+                                                                           new Vector4( 0f, 0f, 1f, 0f),
+                                                                           new Vector4( 1f, 0f, 0f, 0f));
 
     public override bool IsPointAKnot(int PointID) => PointID % 2 == 0;
 
-
-    public override void GetT(float u, int inputCount, out float t, out int startingPoint)
+    public override void GetLocalParameters(float u, int inputCount, out float t, out int startingPoint)
     {
         int knotCount = inputCount / 2;
         float knotQuantity = u * (knotCount - 1);
@@ -24,15 +24,13 @@ public class HermitianSpline : SplineDescriptor
         t = knotQuantity - startingKnot;
     }
 
-    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
+    public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
     {
-        GetT(u, inputPoints.Count, out float t, out int startingPoint);
+        Vector3 PointA = intervalPoints[0];
+        Vector3 DerivA = intervalPoints[1] - PointA;
 
-        Vector3 PointA = inputPoints[startingPoint + 0];
-        Vector3 DerivA = inputPoints[startingPoint + 1] - PointA;
-
-        Vector3 PointB = inputPoints[startingPoint + 2];
-        Vector3 DerivB = inputPoints[startingPoint + 3] - PointB;
+        Vector3 PointB = intervalPoints[2];
+        Vector3 DerivB = intervalPoints[3] - PointB;
 
         float tSqr = t * t;
         float tCube = tSqr * t;
@@ -40,23 +38,25 @@ public class HermitianSpline : SplineDescriptor
         return (2f * tCube - 3f * tSqr + 1f) * PointA + (-2f * tCube + 3f * tSqr) * PointB + (tCube - 2f * tSqr + t) * DerivA + (tCube - tSqr) * DerivB;
     }
 
-    public override Vector3 EvaluateFromMatrix(float u, List<Vector3> inputPoints)
+    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
     {
-        GetT(u, inputPoints.Count, out float t, out int startingPoint);
+        GetLocalParameters(u, inputPoints.Count, out float t, out int startingPoint);
 
-        List<Vector3> intervallePoints = inputPoints.GetRange(startingPoint, 4);
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
 
-        return GetGeometryMatrix(intervallePoints) * M * GetTimeVector(t);
+        return LocalEvaluateFromPolynomial(t, intervalPoints);
     }
 
-    public Vector4 GetTimeVector(float time)
+    public override Vector4 GetTimeVector(float t)
     {
-        float timeSqr = time * time;
-        float timeCube = timeSqr * time;
-        return new Vector4(timeCube, timeSqr, time, 1f);
-    }
+        float tSqr = t * t;
+        float tCube = tSqr * t;
 
-    public Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
+        return new Vector4(tCube, tSqr, t, 1f);
+    }
+    public override Matrix4x4 GetCharacteristicMatrix() => CharacteristicMatrix;
+
+    public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {
         Vector3 PointA = inputPoints[0];
         Vector3 DerivA = inputPoints[1] - PointA;
