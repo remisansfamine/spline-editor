@@ -35,7 +35,6 @@ public class HermitianSpline : SplineDescriptor
         float tSqr = t * t;
         float tCube = tSqr * t;
 
-
         float a = 2f * tCube - 3f * tSqr + 1f;
         float b = -2f * tCube + 3f * tSqr;
         float c = tCube - 2f * tSqr + t;
@@ -74,5 +73,22 @@ public class HermitianSpline : SplineDescriptor
                              new Vector4(PointB.x, PointB.y, PointB.z, 0f),
                              new Vector4(DerivA.x, DerivA.y, DerivA.z, 0f),
                              new Vector4(DerivB.x, DerivB.y, DerivB.z, 1f));
+    }
+
+    public void MoveVelocityAlong(int knotID, Vector3 position, List<Vector3> inputPoints)
+    {
+        Vector3 lastPosition = inputPoints[knotID];
+
+        Vector3 velocity = inputPoints[knotID + 1];
+
+        inputPoints[knotID + 1] = position + (velocity - lastPosition);
+    }
+
+    public override void SetInputPoint(int pointID, Vector3 position, List<Vector3> inputPoints)
+    {
+        if (IsPointAKnot(pointID))
+            MoveVelocityAlong(pointID, position, inputPoints);
+
+        base.SetInputPoint(pointID, position, inputPoints);
     }
 }
