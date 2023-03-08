@@ -4,19 +4,23 @@ using UnityEngine;
 [CustomEditor(typeof(SplineController))]
 public class SplineSceneEditor : Editor
 {
-    [SerializeField] private float positionDistance = 0.01f;
+    [SerializeField] private float positionDistance = 0.001f;
 
     void Input(SplineController controller)
     {
-        for (int PointId = 0; PointId < controller.InputPoint.Count; PointId++)
+        for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId++)
         {
             Handles.color = controller.IsPointAKnot(PointId) ? Color.yellow : Color.grey;
 
-            controller.InputPoint[PointId] = Handles.FreeMoveHandle(controller.InputPoint[PointId], Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
-        }
+            Vector3 HandlePosition = Handles.FreeMoveHandle(controller.GetInputPoint(PointId), Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
 
-        if (GUI.changed)
+            if (!GUI.changed)
+                continue;
+
+            GUI.changed = false;
+            controller.SetInputPoint(PointId, HandlePosition); 
             EditorUtility.SetDirty(target);
+        }
     }
 
     void DisplayLinks(SplineController controller)
@@ -26,38 +30,38 @@ public class SplineSceneEditor : Editor
         switch (controller.SplineFormula)
         {
             case HermitianSpline hermitian:
-                for (int PointId = 0; PointId < controller.InputPoint.Count; PointId += 2)
+                for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId += 2)
                 {
-                    Vector3 Position = controller.InputPoint[PointId + 0];
-                    Vector3 Velocity = controller.InputPoint[PointId + 1];
+                    Vector3 Position = controller.GetInputPoint(PointId + 0);
+                    Vector3 Velocity = controller.GetInputPoint(PointId + 1);
                     Handles.DrawLine(Position, Velocity);
                 }
                 break;
 
             case BezierSpline bezier:
-                for (int PointId = 0; PointId < controller.InputPoint.Count; PointId += 3)
+                for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId += 3)
                 {
-                    Vector3 Position = controller.InputPoint[PointId + 0];
+                    Vector3 Position = controller.GetInputPoint(PointId + 0);
 
                     if (PointId > 0)
                     {
-                        Vector3 PrevVelocity = controller.InputPoint[PointId - 1];
+                        Vector3 PrevVelocity = controller.GetInputPoint(PointId - 1);
                         Handles.DrawLine(Position, PrevVelocity);
                     }
 
-                    if (PointId < controller.InputPoint.Count - 1)
+                    if (PointId < controller.GetInputPointCount() - 1)
                     {
-                        Vector3 NextVelocity = controller.InputPoint[PointId + 1];
+                        Vector3 NextVelocity = controller.GetInputPoint(PointId + 1);
                         Handles.DrawLine(Position, NextVelocity);
                     }
                 }
                 break;
 
             case BSpline bspline:
-                for (int PointId = 0; PointId < controller.InputPoint.Count - 1; PointId++)
+                for (int PointId = 0; PointId < controller.GetInputPointCount() - 1; PointId++)
                 {
-                    Vector3 PositionA = controller.InputPoint[PointId + 0];
-                    Vector3 PositionB = controller.InputPoint[PointId + 1];
+                    Vector3 PositionA = controller.GetInputPoint(PointId + 0);
+                    Vector3 PositionB = controller.GetInputPoint(PointId + 1);
                     Handles.DrawLine(PositionA, PositionB);
                 }
                 break;

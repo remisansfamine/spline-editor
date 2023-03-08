@@ -26,4 +26,6 @@ public class SplineDescriptor : ScriptableObject
     }
 
     public virtual bool IsPointAKnot(int PointID) => false;
+
+    public virtual void SetInputPoint(int pointID, Vector3 position, List<Vector3> inputPoints) => inputPoints[pointID] = position;
 }

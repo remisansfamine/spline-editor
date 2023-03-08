@@ -6,6 +6,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BezierSpline", menuName = "Splines/BezierSpline", order = 1)]
 public class BezierSpline : SplineDescriptor
 {
+    enum ETangenteType
+    {
+        Separated,
+        Collinear,
+        Mirrored,
+        None
+    }
+
+    [SerializeField] private ETangenteType tangenteType;
+
     [SerializeField] private int controlPointsCount = 4;
 
     private static readonly Matrix4x4 CharacteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f),
@@ -97,5 +107,60 @@ public class BezierSpline : SplineDescriptor
                              new Vector4(PointB.x, PointB.y, PointB.z, 0f),
                              new Vector4(PointC.x, PointC.y, PointC.z, 0f),
                              new Vector4(PointD.x, PointD.y, PointD.z, 1f));
+    }
+    public void MoveTangentAlong(int knotID, Vector3 position, List<Vector3> inputPoints)
+    {
+        Vector3 lastPosition = inputPoints[knotID];
+
+        if (knotID > 0)
+        {
+            Vector3 prevTangent = inputPoints[knotID - 1];
+
+            inputPoints[knotID - 1] = position + (prevTangent - lastPosition);
+        }
+
+        if (knotID < inputPoints.Count - 1)
+        {
+            Vector3 nextTangent = inputPoints[knotID + 1];
+
+            inputPoints[knotID + 1] = position + (nextTangent - lastPosition);
+        }
+    }
+
+    public void SetTangentTwin(int pointID, Vector3 position, List<Vector3> inputPoints)
+    {
+        if (pointID <= 1 || pointID >= inputPoints.Count - 2)
+            return;
+
+        // Give the sign to the nearest knot
+        int sign = 2 * (pointID % (controlPointsCount - 1)) - 3;
+
+        int knotID = pointID + sign;
+        Vector3 knotPosition = inputPoints[knotID];
+
+        int otherTangenteID = pointID + sign * 2;
+        Vector3 otherTangente = inputPoints[otherTangenteID];
+
+        Vector3 offset = knotPosition - position;
+
+        if (tangenteType == ETangenteType.Collinear)
+            offset = offset.normalized * Vector3.Distance(knotPosition, otherTangente);
+
+        inputPoints[otherTangenteID] = knotPosition + offset;
+    }
+
+    public override void SetInputPoint(int pointID, Vector3 position, List<Vector3> inputPoints)
+    {
+        if (IsPointAKnot(pointID))
+        {
+            MoveTangentAlong(pointID, position, inputPoints);
+            base.SetInputPoint(pointID, position, inputPoints);
+            return;
+        }
+
+        base.SetInputPoint(pointID, position, inputPoints);
+
+        if (tangenteType != ETangenteType.Separated)
+                SetTangentTwin(pointID, position, inputPoints);
     }
 }
