@@ -52,6 +52,15 @@ public class SplineSceneEditor : Editor
                     }
                 }
                 break;
+
+            case BSpline bspline:
+                for (int PointId = 0; PointId < controller.InputPoint.Count - 1; PointId++)
+                {
+                    Vector3 PositionA = controller.InputPoint[PointId + 0];
+                    Vector3 PositionB = controller.InputPoint[PointId + 1];
+                    Handles.DrawLine(PositionA, PositionB);
+                }
+                break;
         }
     }
 
