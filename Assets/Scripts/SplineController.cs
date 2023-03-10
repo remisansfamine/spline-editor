@@ -15,6 +15,9 @@ public class SplineController : MonoBehaviour
 
     private float GetUFromLength(float length)
     {
+        if (length < 0f)
+            return 0f;
+
         int lastID = cumulativeDistances.Count - 1;
         for (int di = 0; di < lastID; di++)
         {
@@ -29,7 +32,7 @@ public class SplineController : MonoBehaviour
             return Utils.Remap(length, cumulativeDistances[di], cumulativeDistances[di + 1], from, to);
         }
 
-        return 0f;
+        return 1f;
     }
 
     private float GetRemappedU(float u) => GetUFromLength(totalLength * u);
