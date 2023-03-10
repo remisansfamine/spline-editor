@@ -1,30 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class SplineController : MonoBehaviour
 {
     [SerializeField] private List<Vector3> inputPoints = new List<Vector3>();
     [SerializeField] private float continuityAccuracy = 0.01f;
-    private float length = 0f;
+    private float totalLength = 0f;
     [SerializeField] private List<float> cumulativeDistances = new List<float>();
     [SerializeField] private bool useContinuityApproximation = true;
 
     public SplineDescriptor SplineFormula = null;
 
-    private float GetRemappedU(float u)
+    private float GetUFromLength(float length)
     {
-        float quantity = length * u;
-
         int lastID = cumulativeDistances.Count - 1;
         for (int di = 0; di < lastID; di++)
         {
-            if (quantity > cumulativeDistances[di])
+            if (length > cumulativeDistances[di])
                 continue;
 
             float OneOverLastID = 1f / lastID;
@@ -32,11 +26,13 @@ public class SplineController : MonoBehaviour
             float from = di * OneOverLastID;
             float to = from + OneOverLastID;
 
-            return Utils.Remap(quantity, cumulativeDistances[di], cumulativeDistances[di + 1], from, to);
+            return Utils.Remap(length, cumulativeDistances[di], cumulativeDistances[di + 1], from, to);
         }
 
-        return u;
+        return 0f;
     }
+
+    private float GetRemappedU(float u) => GetUFromLength(totalLength * u);
 
     public Vector3 EvaluateFromPolynomial(float u)
     {
@@ -88,7 +84,7 @@ public class SplineController : MonoBehaviour
             previousPoint = currentPoint;
         }
 
-        length = cumulativeDistances.Last();
+        totalLength = cumulativeDistances.Last();
     }
 
     public virtual void SetInputPoint(int PointID, Vector3 Position)
