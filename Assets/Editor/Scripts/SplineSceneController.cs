@@ -4,7 +4,7 @@ using UnityEngine;
 [CustomEditor(typeof(SplineController))]
 public class SplineSceneEditor : Editor
 {
-    [SerializeField] private float positionDistance = 0.001f;
+    [SerializeField] private static float positionDistance = 0.01f;
 
     void Input(SplineController controller)
     {
@@ -23,9 +23,9 @@ public class SplineSceneEditor : Editor
         }
     }
 
-    void DisplayLinks(SplineController controller)
+    static void DisplayLinks(SplineController controller)
     {
-        Handles.color = Color.red;
+        Gizmos.color = Color.red;
 
         switch (controller.SplineFormula)
         {
@@ -34,7 +34,7 @@ public class SplineSceneEditor : Editor
                 {
                     Vector3 Position = controller.GetInputPoint(PointId + 0);
                     Vector3 Velocity = controller.GetInputPoint(PointId + 1);
-                    Handles.DrawLine(Position, Velocity);
+                    Gizmos.DrawLine(Position, Velocity);
                 }
                 break;
 
@@ -46,13 +46,13 @@ public class SplineSceneEditor : Editor
                     if (PointId > 0)
                     {
                         Vector3 PrevVelocity = controller.GetInputPoint(PointId - 1);
-                        Handles.DrawLine(Position, PrevVelocity);
+                        Gizmos.DrawLine(Position, PrevVelocity);
                     }
 
                     if (PointId < controller.GetInputPointCount() - 1)
                     {
                         Vector3 NextVelocity = controller.GetInputPoint(PointId + 1);
-                        Handles.DrawLine(Position, NextVelocity);
+                        Gizmos.DrawLine(Position, NextVelocity);
                     }
                 }
                 break;
@@ -62,27 +62,29 @@ public class SplineSceneEditor : Editor
                 {
                     Vector3 PositionA = controller.GetInputPoint(PointId + 0);
                     Vector3 PositionB = controller.GetInputPoint(PointId + 1);
-                    Handles.DrawLine(PositionA, PositionB);
+                    Gizmos.DrawLine(PositionA, PositionB);
                 }
                 break;
         }
     }
 
-    void Display(SplineController controller)
+    static public void Display(SplineController controller)
     {
         DisplayLinks(controller);
 
-        Handles.color = Color.white;
+        Gizmos.color = Color.white;
 
-        Vector3 StartPoint = controller.EvaluateFromMatrix(0f);
+        Vector3 StartPoint = Vector3.zero;
 
-        for (float quantity = positionDistance; quantity < 1f; quantity += positionDistance)
+        for (float quantity = 0f; quantity <= 1f; quantity += positionDistance)
         {
             Vector3 EndPoint = controller.EvaluateFromMatrix(quantity);
-            Handles.DrawLine(StartPoint, EndPoint);
+            Gizmos.DrawSphere(EndPoint, 0.1f);
+
+            if (quantity > 0f)
+                Handles.DrawLine(StartPoint, EndPoint);
 
             StartPoint = EndPoint;
-            quantity += positionDistance;
         }
     }
 
@@ -91,6 +93,5 @@ public class SplineSceneEditor : Editor
         SplineController controller = target as SplineController;
 
         Input(controller);
-        Display(controller);
     }
 }
