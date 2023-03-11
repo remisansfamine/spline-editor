@@ -5,11 +5,7 @@ using UnityEngine;
 
 public class SplineDescriptor : ScriptableObject
 {
-    public virtual void GetLocalParameters(float u, int inputCount, out float t, out int startingPoint)
-    {
-        t = 0f;
-        startingPoint = 0;
-    }
+    public virtual (float t, int startingPoint) GetLocalParameters(float u, int inputCount) => (0f, 0);
 
     public virtual Vector4 GetTimeVector(float time) => throw new NotImplementedException();
     public virtual Matrix4x4 GetCharacteristicMatrix() => throw new NotImplementedException();
@@ -18,7 +14,7 @@ public class SplineDescriptor : ScriptableObject
     public virtual Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints) => Vector3.zero;
     public virtual Vector3 EvaluateFromMatrix(float u, List<Vector3> inputPoints)
     {
-        GetLocalParameters(u, inputPoints.Count, out float t, out int startingPoint);
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
 
         List<Vector3> intervallePoints = inputPoints.GetRange(startingPoint, 4);
 

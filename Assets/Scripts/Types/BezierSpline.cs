@@ -23,15 +23,16 @@ public class BezierSpline : SplineDescriptor
                                                                            new Vector4(-3f, 3f, 0f, 0f),
                                                                            new Vector4( 1f, 0f, 0f, 0f));
 
-    public override void GetLocalParameters(float u, int inputCount, out float t, out int startingPoint)
+    public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
         int knotCount = (inputCount + 2) / 3;
         float knotQuantity = u * (knotCount - 1);
-        int startingKnot = Mathf.FloorToInt(knotQuantity);
+        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, knotCount - 2);
 
-        startingPoint = startingKnot * 3;
+        int startingPoint = startingKnot * 3;
+        float t = knotQuantity - startingKnot;
 
-        t = knotQuantity - startingKnot;
+        return (t, startingPoint);
     }
 
     public override bool IsPointAKnot(int PointID) => (PointID) % (controlPointsCount - 1) == 0;
@@ -81,7 +82,7 @@ public class BezierSpline : SplineDescriptor
 
     public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
     {
-        GetLocalParameters(u, inputPoints.Count, out float t, out int startingPoint);
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
 
         List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, controlPointsCount);
 

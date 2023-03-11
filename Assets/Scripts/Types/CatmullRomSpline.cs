@@ -12,15 +12,16 @@ public class CatmullRomSpline : SplineDescriptor
                                                                            new Vector4(-1f, 0f, 1f, 0f) * 0.5f,
                                                                            new Vector4( 0f, 2f, 0f, 0f) * 0.5f);
 
-    public override void GetLocalParameters(float u, int inputCount, out float t, out int startingPoint)
+    public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
         int knotCount = inputCount;
         float knotQuantity = u * (knotCount - 3);
-        int startingKnot = Mathf.FloorToInt(knotQuantity);
+        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, knotCount - 2);
 
-        startingPoint = startingKnot;
+        int startingPoint = startingKnot;
+        float t = knotQuantity - startingKnot;
 
-        t = knotQuantity - startingKnot;
+        return (t, startingPoint);
     }
 
     public override bool IsPointAKnot(int PointID) => true;

@@ -25,7 +25,7 @@ public class SplineSceneEditor : Editor
 
     static void DisplayLinks(SplineController controller)
     {
-        Gizmos.color = Color.red;
+        Handles.color = Color.red;
 
         switch (controller.SplineFormula)
         {
@@ -34,7 +34,7 @@ public class SplineSceneEditor : Editor
                 {
                     Vector3 Position = controller.GetInputPoint(PointId + 0);
                     Vector3 Velocity = controller.GetInputPoint(PointId + 1);
-                    Gizmos.DrawLine(Position, Velocity);
+                    Handles.DrawLine(Position, Velocity);
                 }
                 break;
 
@@ -46,13 +46,13 @@ public class SplineSceneEditor : Editor
                     if (PointId > 0)
                     {
                         Vector3 PrevVelocity = controller.GetInputPoint(PointId - 1);
-                        Gizmos.DrawLine(Position, PrevVelocity);
+                        Handles.DrawLine(Position, PrevVelocity);
                     }
 
                     if (PointId < controller.GetInputPointCount() - 1)
                     {
                         Vector3 NextVelocity = controller.GetInputPoint(PointId + 1);
-                        Gizmos.DrawLine(Position, NextVelocity);
+                        Handles.DrawLine(Position, NextVelocity);
                     }
                 }
                 break;
@@ -62,7 +62,7 @@ public class SplineSceneEditor : Editor
                 {
                     Vector3 PositionA = controller.GetInputPoint(PointId + 0);
                     Vector3 PositionB = controller.GetInputPoint(PointId + 1);
-                    Gizmos.DrawLine(PositionA, PositionB);
+                    Handles.DrawLine(PositionA, PositionB);
                 }
                 break;
         }
@@ -72,14 +72,13 @@ public class SplineSceneEditor : Editor
     {
         DisplayLinks(controller);
 
-        Gizmos.color = Color.white;
+        Handles.color = Color.white;
 
         Vector3 StartPoint = Vector3.zero;
 
-        for (float quantity = 0f; quantity <= 1f; quantity += positionDistance)
+        for (float quantity = 0f; quantity < 1f; quantity += positionDistance)
         {
             Vector3 EndPoint = controller.EvaluateFromMatrix(quantity);
-            Gizmos.DrawSphere(EndPoint, 0.1f);
 
             if (quantity > 0f)
                 Handles.DrawLine(StartPoint, EndPoint);
@@ -93,5 +92,7 @@ public class SplineSceneEditor : Editor
         SplineController controller = target as SplineController;
 
         Input(controller);
+
+        Display(controller);
     }
 }

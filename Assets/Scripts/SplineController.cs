@@ -18,6 +18,8 @@ public class SplineController : MonoBehaviour
         if (length < 0f)
             return 0f;
 
+        totalLength = cumulativeDistances.Last();
+
         int lastID = cumulativeDistances.Count - 1;
         for (int di = 0; di < lastID; di++)
         {
@@ -86,8 +88,6 @@ public class SplineController : MonoBehaviour
 
             previousPoint = currentPoint;
         }
-
-        totalLength = cumulativeDistances.Last();
     }
 
     public virtual void SetInputPoint(int PointID, Vector3 Position)
@@ -102,11 +102,4 @@ public class SplineController : MonoBehaviour
 
     public virtual Vector3 GetInputPoint(int PointID) => inputPoints[PointID];
     public virtual int GetInputPointCount() => inputPoints.Count;
-
-
-    void OnDrawGizmos()
-    {
-
-        SplineSceneEditor.Display(this);
-    }
 }
