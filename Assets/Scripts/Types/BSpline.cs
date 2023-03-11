@@ -14,8 +14,9 @@ public class BSpline : SplineDescriptor
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
         int knotCount = inputCount;
-        float knotQuantity = u * (knotCount - 3);
-        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, knotCount - 2);
+        int validKnotCount = knotCount - 3;
+        float knotQuantity = u * validKnotCount;
+        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, validKnotCount - 1);
 
         int startingPoint = startingKnot;
         float t = knotQuantity - startingKnot;
@@ -72,5 +73,12 @@ public class BSpline : SplineDescriptor
                              new Vector4(PointB.x, PointB.y, PointB.z, 0f),
                              new Vector4(PointC.x, PointC.y, PointC.z, 0f),
                              new Vector4(PointD.x, PointD.y, PointD.z, 1f));
+    }
+
+    public override void InsertPoint(int pointID, List<Vector3> inputPoints)
+    {
+        inputPoints.Insert(pointID, inputPoints[pointID]);
+
+        base.InsertPoint(pointID, inputPoints);
     }
 }

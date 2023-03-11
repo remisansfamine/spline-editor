@@ -4,26 +4,54 @@ using UnityEngine;
 [CustomEditor(typeof(SplineController))]
 public class SplineSceneEditor : Editor
 {
-    [SerializeField] private static float positionDistance = 0.01f;
+    [SerializeField] private float positionDistance = 0.01f;
 
-    void Input(SplineController controller)
+    private bool canInsert = true;
+
+    private Color GetPointColor(SplineController controller, int PointID, bool isInserting)
     {
-        for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId++)
-        {
-            Handles.color = controller.IsPointAKnot(PointId) ? Color.yellow : Color.grey;
+        if (!controller.IsPointAKnot(PointID))
+            return Color.grey;
 
-            Vector3 HandlePosition = Handles.FreeMoveHandle(controller.GetInputPoint(PointId), Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
+        if (isInserting)
+            return Color.blue;
+
+        return Color.yellow;
+    }
+
+    void ProcessInput(SplineController controller)
+    {
+        bool isInserting = Event.current.control;
+
+        if (!isInserting)
+            canInsert = true;
+
+        for (int PointID = 0; PointID < controller.GetInputPointCount(); PointID++)
+        {
+            Handles.color = GetPointColor(controller, PointID, isInserting);
+
+            Vector3 HandlePosition = Handles.FreeMoveHandle(controller.GetInputPoint(PointID), Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
 
             if (!GUI.changed)
                 continue;
 
             GUI.changed = false;
-            controller.SetInputPoint(PointId, HandlePosition); 
+
+            if (!isInserting)
+            {
+                controller.SetInputPoint(PointID, HandlePosition); 
+            }
+            else if (canInsert)
+            {
+                canInsert = false;
+                controller.InsertPoint(PointID);
+            }
+
             EditorUtility.SetDirty(target);
         }
     }
 
-    static void DisplayLinks(SplineController controller)
+    private void DisplayLinks(SplineController controller)
     {
         Handles.color = Color.red;
 
@@ -68,7 +96,7 @@ public class SplineSceneEditor : Editor
         }
     }
 
-    static public void Display(SplineController controller)
+    private void Display(SplineController controller)
     {
         DisplayLinks(controller);
 
@@ -76,7 +104,7 @@ public class SplineSceneEditor : Editor
 
         Vector3 StartPoint = Vector3.zero;
 
-        for (float quantity = 0f; quantity < 1f; quantity += positionDistance)
+        for (float quantity = 0f; quantity <= 1f; quantity += positionDistance)
         {
             Vector3 EndPoint = controller.EvaluateFromMatrix(quantity);
 
@@ -87,11 +115,11 @@ public class SplineSceneEditor : Editor
         }
     }
 
-    void OnSceneGUI()
+    private void OnSceneGUI()
     {
         SplineController controller = target as SplineController;
 
-        Input(controller);
+        ProcessInput(controller);
 
         Display(controller);
     }

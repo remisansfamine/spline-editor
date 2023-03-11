@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SplineController : MonoBehaviour
 {
@@ -11,7 +12,9 @@ public class SplineController : MonoBehaviour
     [SerializeField] private List<float> cumulativeDistances = new List<float>();
     [SerializeField] private bool useContinuityApproximation = true;
 
-    public SplineDescriptor SplineFormula = null;
+    [SerializeField] private SplineDescriptor splineFormula = null;
+
+    public SplineDescriptor SplineFormula => splineFormula;
 
     private float GetUFromLength(float length)
     {
@@ -26,10 +29,10 @@ public class SplineController : MonoBehaviour
             if (length > cumulativeDistances[di])
                 continue;
 
-            float OneOverLastID = 1f / lastID;
+            float oneOverLastID = 1f / lastID;
 
-            float from = di * OneOverLastID;
-            float to = from + OneOverLastID;
+            float from = di * oneOverLastID;
+            float to = from + oneOverLastID;
 
             return Utils.Remap(length, cumulativeDistances[di], cumulativeDistances[di + 1], from, to);
         }
@@ -41,33 +44,33 @@ public class SplineController : MonoBehaviour
 
     public Vector3 EvaluateFromPolynomial(float u)
     {
-        if (!SplineFormula)
+        if (!splineFormula)
             return Vector3.zero;
 
         if (useContinuityApproximation)
-            return SplineFormula.EvaluateFromPolynomial(GetRemappedU(u), inputPoints);
+            return splineFormula.EvaluateFromPolynomial(GetRemappedU(u), inputPoints);
 
-        return SplineFormula.EvaluateFromPolynomial(u, inputPoints);
+        return splineFormula.EvaluateFromPolynomial(u, inputPoints);
     }
 
     public Vector3 EvaluateFromMatrix(float u)
     {
-        if (!SplineFormula)
+        if (!splineFormula)
             return Vector3.zero;
 
         if (useContinuityApproximation)
-            return SplineFormula.EvaluateFromMatrix(GetRemappedU(u), inputPoints);
+            return splineFormula.EvaluateFromMatrix(GetRemappedU(u), inputPoints);
 
-        return SplineFormula.EvaluateFromMatrix(u, inputPoints);
+        return splineFormula.EvaluateFromMatrix(u, inputPoints);
     }
 
-    public bool IsPointAKnot(int PointID) => SplineFormula ? SplineFormula.IsPointAKnot(PointID) : false;
+    public bool IsPointAKnot(int pointID) => splineFormula ? splineFormula.IsPointAKnot(pointID) : false;
 
     private void ComputeDistances()
     {
         cumulativeDistances.Clear();
 
-        if (!useContinuityApproximation || !SplineFormula)
+        if (!useContinuityApproximation || !splineFormula)
             return;
 
         Vector3 previousPoint = Vector3.zero;
@@ -75,7 +78,7 @@ public class SplineController : MonoBehaviour
         float distance = 0f;
         for (float quantity = 0f; quantity < 1f; quantity += continuityAccuracy)
         {
-            Vector3 currentPoint = SplineFormula.EvaluateFromMatrix(quantity, inputPoints);
+            Vector3 currentPoint = splineFormula.EvaluateFromMatrix(quantity, inputPoints);
 
             float currentDistance = 0f;
 
@@ -90,16 +93,31 @@ public class SplineController : MonoBehaviour
         }
     }
 
-    public virtual void SetInputPoint(int PointID, Vector3 Position)
+    public void SetInputPoint(int pointID, Vector3 position)
     {
-        if (!SplineFormula)
+        if (!splineFormula)
             return;
 
-        SplineFormula.SetInputPoint(PointID, Position, inputPoints);
+        splineFormula.SetInputPoint(pointID, position, inputPoints);
 
         ComputeDistances();
     }
 
-    public virtual Vector3 GetInputPoint(int PointID) => inputPoints[PointID];
-    public virtual int GetInputPointCount() => inputPoints.Count;
+    public void InsertPoint(int pointID)
+    {
+        if (!splineFormula || !splineFormula.IsPointAKnot(pointID))
+            return;
+
+        splineFormula.InsertPoint(pointID, inputPoints);
+
+        ComputeDistances();
+    }
+
+    public Vector3 GetInputPoint(int pointID) => inputPoints[pointID];
+    public int GetInputPointCount() => inputPoints.Count;
+
+    private void OnValidate()
+    {
+        ComputeDistances();
+    }
 }
