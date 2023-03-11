@@ -16,8 +16,9 @@ public class HermitianSpline : SplineDescriptor
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
         int knotCount = inputCount / 2;
-        float knotQuantity = u * (knotCount - 1);
-        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, knotCount - 2);
+        int validKnotCount = knotCount - 1;
+        float knotQuantity = u * validKnotCount;
+        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, validKnotCount - 1);
 
         int startingPoint = startingKnot * 2;
         float t = knotQuantity - startingKnot;
@@ -91,5 +92,14 @@ public class HermitianSpline : SplineDescriptor
             MoveVelocityAlong(pointID, position, inputPoints);
 
         base.SetInputPoint(pointID, position, inputPoints);
+    }
+
+    public override void InsertPoint(int pointID, List<Vector3> inputPoints)
+    {
+        List<Vector3> newPoints = new List<Vector3>() { inputPoints[pointID], inputPoints[pointID + 1] };
+
+        inputPoints.InsertRange(pointID, newPoints);
+
+        base.InsertPoint(pointID, inputPoints);
     }
 }

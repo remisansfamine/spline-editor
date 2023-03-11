@@ -21,7 +21,8 @@ public class SplineDescriptor : ScriptableObject
         return GetGeometryMatrix(intervallePoints) * GetCharacteristicMatrix() * GetTimeVector(t);
     }
 
-    public virtual bool IsPointAKnot(int PointID) => false;
+    public virtual bool IsPointAKnot(int pointID) => false;
 
     public virtual void SetInputPoint(int pointID, Vector3 position, List<Vector3> inputPoints) => inputPoints[pointID] = position;
+    public virtual void InsertPoint(int pointID, List<Vector3> inputPoints) { }
 }

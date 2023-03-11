@@ -26,8 +26,9 @@ public class BezierSpline : SplineDescriptor
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
         int knotCount = (inputCount + 2) / 3;
-        float knotQuantity = u * (knotCount - 1);
-        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, knotCount - 2);
+        int validKnotCount = knotCount - 1;
+        float knotQuantity = u * validKnotCount;
+        int startingKnot = Mathf.Clamp(Mathf.FloorToInt(knotQuantity), 0, validKnotCount - 1);
 
         int startingPoint = startingKnot * 3;
         float t = knotQuantity - startingKnot;
@@ -130,16 +131,21 @@ public class BezierSpline : SplineDescriptor
 
     public void SetTangentTwin(int pointID, Vector3 position, List<Vector3> inputPoints)
     {
-        if (pointID <= 1 || pointID >= inputPoints.Count - 2)
-            return;
-
         // Give the sign to the nearest knot
         int sign = 2 * (pointID % (controlPointsCount - 1)) - 3;
 
         int knotID = pointID + sign;
+
+        if (knotID < 0 || knotID > inputPoints.Count - 1)
+            return;
+
         Vector3 knotPosition = inputPoints[knotID];
 
         int otherTangenteID = pointID + sign * 2;
+
+        if (otherTangenteID < 0 || otherTangenteID > inputPoints.Count - 1)
+            return;
+
         Vector3 otherTangente = inputPoints[otherTangenteID];
 
         Vector3 offset = knotPosition - position;
@@ -162,6 +168,23 @@ public class BezierSpline : SplineDescriptor
         base.SetInputPoint(pointID, position, inputPoints);
 
         if (tangenteType != ETangenteType.Separated)
-                SetTangentTwin(pointID, position, inputPoints);
+            SetTangentTwin(pointID, position, inputPoints);
+    }
+
+    public override void InsertPoint(int pointID, List<Vector3> inputPoints)
+    {
+        List<Vector3> newPoints = new List<Vector3>();
+
+        if (pointID > 0)
+            newPoints.Add(inputPoints[pointID - 1]);
+
+        newPoints.Add(inputPoints[pointID]);
+
+        if (pointID < inputPoints.Count - 1)
+            newPoints.Add(inputPoints[pointID + 1]);
+
+        inputPoints.InsertRange(pointID, newPoints);
+
+        base.InsertPoint(pointID, inputPoints);
     }
 }

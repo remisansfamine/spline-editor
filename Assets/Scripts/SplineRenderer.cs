@@ -18,7 +18,6 @@ public class SplineRenderer : MonoBehaviour
         controller = GetComponent<SplineController>();
     }
 
-    // Start is called before the first frame update
     void Update()
     {
         step = 1f / positionDistance;
