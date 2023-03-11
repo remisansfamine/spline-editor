@@ -6,11 +6,11 @@ public class SplineSceneEditor : Editor
 {
     [SerializeField] private float positionDistance = 0.01f;
 
-    private bool canInsert = true;
+    private int? insertedPoint = null;
 
-    private Color GetPointColor(SplineController controller, int PointID, bool isInserting)
+    private Color GetPointColor(SplineController controller, int pointID, bool isInserting)
     {
-        if (!controller.IsPointAKnot(PointID))
+        if (!controller.IsPointAKnot(pointID))
             return Color.grey;
 
         if (isInserting)
@@ -21,30 +21,38 @@ public class SplineSceneEditor : Editor
 
     void ProcessInput(SplineController controller)
     {
-        bool isInserting = Event.current.control;
+        Event currEvent = Event.current;
+
+        bool isInserting = currEvent.control;
 
         if (!isInserting)
-            canInsert = true;
+            insertedPoint = null;
 
-        for (int PointID = 0; PointID < controller.GetInputPointCount(); PointID++)
+        for (int pointID = 0; pointID < controller.GetInputPointCount(); pointID++)
         {
-            Handles.color = GetPointColor(controller, PointID, isInserting);
+            if (pointID == insertedPoint)
+                continue;
 
-            Vector3 HandlePosition = Handles.FreeMoveHandle(controller.GetInputPoint(PointID), Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
+            Handles.color = GetPointColor(controller, pointID, isInserting);
+
+            Vector3 handlePosition = Handles.FreeMoveHandle(controller.GetInputPoint(pointID), Quaternion.identity, 1f, Vector3.zero, Handles.SphereHandleCap);
 
             if (!GUI.changed)
                 continue;
 
             GUI.changed = false;
 
-            if (!isInserting)
+            if (insertedPoint.HasValue)
+                controller.SetInputPoint(insertedPoint.Value, handlePosition);
+            else
             {
-                controller.SetInputPoint(PointID, HandlePosition); 
-            }
-            else if (canInsert)
-            {
-                canInsert = false;
-                controller.InsertPoint(PointID);
+                if (!isInserting)
+                    controller.SetInputPoint(pointID, handlePosition);
+                else
+                {
+                    controller.InsertPoint(pointID);
+                    insertedPoint = pointID; 
+                }
             }
 
             EditorUtility.SetDirty(target);
@@ -58,29 +66,29 @@ public class SplineSceneEditor : Editor
         switch (controller.SplineFormula)
         {
             case HermitianSpline hermitian:
-                for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId += 2)
+                for (int pointID = 0; pointID < controller.GetInputPointCount(); pointID += 2)
                 {
-                    Vector3 Position = controller.GetInputPoint(PointId + 0);
-                    Vector3 Velocity = controller.GetInputPoint(PointId + 1);
-                    Handles.DrawLine(Position, Velocity);
+                    Vector3 position = controller.GetInputPoint(pointID + 0);
+                    Vector3 velocity = controller.GetInputPoint(pointID + 1);
+                    Handles.DrawLine(position, velocity);
                 }
                 break;
 
             case BezierSpline bezier:
                 for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId += 3)
                 {
-                    Vector3 Position = controller.GetInputPoint(PointId + 0);
+                    Vector3 position = controller.GetInputPoint(PointId + 0);
 
                     if (PointId > 0)
                     {
-                        Vector3 PrevVelocity = controller.GetInputPoint(PointId - 1);
-                        Handles.DrawLine(Position, PrevVelocity);
+                        Vector3 prevTangent = controller.GetInputPoint(PointId - 1);
+                        Handles.DrawLine(position, prevTangent);
                     }
 
                     if (PointId < controller.GetInputPointCount() - 1)
                     {
-                        Vector3 NextVelocity = controller.GetInputPoint(PointId + 1);
-                        Handles.DrawLine(Position, NextVelocity);
+                        Vector3 nextTangent = controller.GetInputPoint(PointId + 1);
+                        Handles.DrawLine(position, nextTangent);
                     }
                 }
                 break;
@@ -88,9 +96,9 @@ public class SplineSceneEditor : Editor
             case BSpline bspline:
                 for (int PointId = 0; PointId < controller.GetInputPointCount() - 1; PointId++)
                 {
-                    Vector3 PositionA = controller.GetInputPoint(PointId + 0);
-                    Vector3 PositionB = controller.GetInputPoint(PointId + 1);
-                    Handles.DrawLine(PositionA, PositionB);
+                    Vector3 positionA = controller.GetInputPoint(PointId + 0);
+                    Vector3 positionB = controller.GetInputPoint(PointId + 1);
+                    Handles.DrawLine(positionA, positionB);
                 }
                 break;
         }
@@ -102,16 +110,16 @@ public class SplineSceneEditor : Editor
 
         Handles.color = Color.white;
 
-        Vector3 StartPoint = Vector3.zero;
+        Vector3 sstartPoint = Vector3.zero;
 
         for (float quantity = 0f; quantity <= 1f; quantity += positionDistance)
         {
-            Vector3 EndPoint = controller.EvaluateFromMatrix(quantity);
+            Vector3 endPoint = controller.EvaluateFromMatrix(quantity);
 
             if (quantity > 0f)
-                Handles.DrawLine(StartPoint, EndPoint);
+                Handles.DrawLine(sstartPoint, endPoint);
 
-            StartPoint = EndPoint;
+            sstartPoint = endPoint;
         }
     }
 
