@@ -103,14 +103,16 @@ public class SplineController : MonoBehaviour
         ComputeDistances();
     }
 
-    public void InsertPoint(int pointID)
+    public int InsertPoint(int pointID)
     {
         if (!splineFormula || !splineFormula.IsPointAKnot(pointID))
-            return;
+            return -1;
 
-        splineFormula.InsertPoint(pointID, inputPoints);
+        int insertedPointID = splineFormula.InsertPoint(pointID, inputPoints);
 
         ComputeDistances();
+
+        return insertedPointID;
     }
 
     public Vector3 GetInputPoint(int pointID) => inputPoints[pointID];

@@ -6,12 +6,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "HermitianSpline", menuName = "Splines/HermitianSpline", order = 1)]
 public class HermitianSpline : SplineDescriptor
 {
-    private static readonly Matrix4x4 CharacteristicMatrix = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
+    private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
                                                                            new Vector4(-3f, 3f,-2f,-1f),
                                                                            new Vector4( 0f, 0f, 1f, 0f),
                                                                            new Vector4( 1f, 0f, 0f, 0f));
 
-    public override bool IsPointAKnot(int PointID) => PointID % 2 == 0;
+    public override bool IsPointAKnot(int pointID) => pointID % 2 == 0;
 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
@@ -28,11 +28,11 @@ public class HermitianSpline : SplineDescriptor
 
     public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
     {
-        Vector3 PointA = intervalPoints[0];
-        Vector3 DerivA = intervalPoints[1] - PointA;
+        Vector3 pointA = intervalPoints[0];
+        Vector3 derivA = intervalPoints[1] - pointA;
 
-        Vector3 PointB = intervalPoints[2];
-        Vector3 DerivB = intervalPoints[3] - PointB;
+        Vector3 pointB = intervalPoints[2];
+        Vector3 derivB = intervalPoints[3] - pointB;
 
         float tSqr = t * t;
         float tCube = tSqr * t;
@@ -42,7 +42,7 @@ public class HermitianSpline : SplineDescriptor
         float c = tCube - 2f * tSqr + t;
         float d = tCube - tSqr;
 
-        return a * PointA + b * PointB + c * DerivA + d * DerivB;
+        return a * pointA + b * pointB + c * derivA + d * derivB;
     }
 
     public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
@@ -61,20 +61,20 @@ public class HermitianSpline : SplineDescriptor
 
         return new Vector4(tCube, tSqr, t, 1f);
     }
-    public override Matrix4x4 GetCharacteristicMatrix() => CharacteristicMatrix;
+    public override Matrix4x4 GetCharacteristicMatrix() => characteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {
-        Vector3 PointA = inputPoints[0];
-        Vector3 DerivA = inputPoints[1] - PointA;
+        Vector3 pointA = inputPoints[0];
+        Vector3 derivA = inputPoints[1] - pointA;
 
-        Vector3 PointB = inputPoints[2];
-        Vector3 DerivB = inputPoints[3] - PointB;
+        Vector3 pointB = inputPoints[2];
+        Vector3 derivB = inputPoints[3] - pointB;
 
-        return new Matrix4x4(new Vector4(PointA.x, PointA.y, PointA.z, 0f), 
-                             new Vector4(PointB.x, PointB.y, PointB.z, 0f),
-                             new Vector4(DerivA.x, DerivA.y, DerivA.z, 0f),
-                             new Vector4(DerivB.x, DerivB.y, DerivB.z, 1f));
+        return new Matrix4x4(new Vector4(pointA.x, pointA.y, pointA.z, 0f), 
+                             new Vector4(pointB.x, pointB.y, pointB.z, 0f),
+                             new Vector4(derivA.x, derivA.y, derivA.z, 0f),
+                             new Vector4(derivB.x, derivB.y, derivB.z, 1f));
     }
 
     public void MoveVelocityAlong(int knotID, Vector3 position, List<Vector3> inputPoints)
@@ -94,12 +94,14 @@ public class HermitianSpline : SplineDescriptor
         base.SetInputPoint(pointID, position, inputPoints);
     }
 
-    public override void InsertPoint(int pointID, List<Vector3> inputPoints)
+    public override int InsertPoint(int pointID, List<Vector3> inputPoints)
     {
         List<Vector3> newPoints = new List<Vector3>() { inputPoints[pointID], inputPoints[pointID + 1] };
 
         inputPoints.InsertRange(pointID, newPoints);
 
         base.InsertPoint(pointID, inputPoints);
+
+        return pointID;
     }
 }

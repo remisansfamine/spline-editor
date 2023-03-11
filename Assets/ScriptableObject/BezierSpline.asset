@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa1581123b3d3cf4b9a2be8d4eca79e2, type: 3}
   m_Name: BezierSpline
   m_EditorClassIdentifier: 
-  tangenteType: 2
+  tangentType: 2
   controlPointsCount: 4

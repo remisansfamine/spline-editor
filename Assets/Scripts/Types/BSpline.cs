@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BSpline", menuName = "Splines/BSpline", order = 1)]
 public class BSpline : SplineDescriptor
 {
-    private static readonly Matrix4x4 CharacteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) / 6f,
+    private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) / 6f,
                                                                            new Vector4( 3f,-6f, 3f, 0f) / 6f,
                                                                            new Vector4(-3f, 0f, 3f, 0f) / 6f,
                                                                            new Vector4( 1f, 4f, 1f, 0f) / 6f);
@@ -28,10 +28,10 @@ public class BSpline : SplineDescriptor
 
     public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
     {
-        Vector3 PointA = intervalPoints[0];
-        Vector3 PointB = intervalPoints[1];
-        Vector3 PointC = intervalPoints[2];
-        Vector3 PointD = intervalPoints[3];
+        Vector3 pointA = intervalPoints[0];
+        Vector3 pointB = intervalPoints[1];
+        Vector3 pointC = intervalPoints[2];
+        Vector3 pointD = intervalPoints[3];
 
         float tSqr = t * t;
         float tCube = tSqr * t;
@@ -41,7 +41,7 @@ public class BSpline : SplineDescriptor
         float c = 3f * (-tCube + tSqr + t) + 1f;
         float d = tCube;
 
-        return 1f / 6f * (a * PointA + b * PointB + c * PointC + d * PointD);
+        return 1f / 6f * (a * pointA + b * pointB + c * pointC + d * pointD);
     }
 
 
@@ -60,25 +60,27 @@ public class BSpline : SplineDescriptor
         float timeCube = timeSqr * time;
         return new Vector4(timeCube, timeSqr, time, 1f);
     }
-    public override Matrix4x4 GetCharacteristicMatrix() => CharacteristicMatrix;
+    public override Matrix4x4 GetCharacteristicMatrix() => characteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {
-        Vector3 PointA = inputPoints[0];
-        Vector3 PointB = inputPoints[1];
-        Vector3 PointC = inputPoints[2];
-        Vector3 PointD = inputPoints[3];
+        Vector3 pointA = inputPoints[0];
+        Vector3 pointB = inputPoints[1];
+        Vector3 pointC = inputPoints[2];
+        Vector3 pointD = inputPoints[3];
 
-        return new Matrix4x4(new Vector4(PointA.x, PointA.y, PointA.z, 0f),
-                             new Vector4(PointB.x, PointB.y, PointB.z, 0f),
-                             new Vector4(PointC.x, PointC.y, PointC.z, 0f),
-                             new Vector4(PointD.x, PointD.y, PointD.z, 1f));
+        return new Matrix4x4(new Vector4(pointA.x, pointA.y, pointA.z, 0f),
+                             new Vector4(pointB.x, pointB.y, pointB.z, 0f),
+                             new Vector4(pointC.x, pointC.y, pointC.z, 0f),
+                             new Vector4(pointD.x, pointD.y, pointD.z, 1f));
     }
 
-    public override void InsertPoint(int pointID, List<Vector3> inputPoints)
+    public override int InsertPoint(int pointID, List<Vector3> inputPoints)
     {
         inputPoints.Insert(pointID, inputPoints[pointID]);
 
         base.InsertPoint(pointID, inputPoints);
+
+        return pointID;
     }
 }
