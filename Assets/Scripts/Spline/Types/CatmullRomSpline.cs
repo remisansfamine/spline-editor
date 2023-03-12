@@ -27,6 +27,33 @@ public class CatmullRomSpline : SplineDescriptor
 
     public override bool IsPointAKnot(int pointID) => true;
 
+    public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        Vector3 pointA = intervalPoints[0];
+        Vector3 pointB = intervalPoints[1];
+        Vector3 pointC = intervalPoints[2];
+        Vector3 pointD = intervalPoints[3];
+
+        float tSqr = t * t;
+        float tCube = tSqr * t;
+
+        float a = -tCube + 2f * tSqr - t;
+        float b = 3f * tCube - 5f * tSqr + 2f;
+        float c = -3f * tCube + 4f * tSqr + t;
+        float d = tCube - tSqr;
+
+        return 0.5f * (a * pointA + b * pointB + c * pointC + d * pointD);
+    }
+
+    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
+    {
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
+
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
+
+        return LocalEvaluateFromPolynomial(t, intervalPoints);
+    }
+
     public override Vector4 GetTimeVector(float time)
     {
         float timeSqr = time * time;
