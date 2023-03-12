@@ -67,7 +67,6 @@ public class BSpline : MultiModeSpline
         Vector3 pointD = intervalPoints[3];
 
         float tSqr = t * t;
-        float tCube = tSqr * t;
 
         float a = -3f * Mathf.Pow(1f - t, 2f);
         float b = 9f * tSqr - 12f * t;
