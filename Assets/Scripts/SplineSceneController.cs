@@ -110,16 +110,16 @@ public class SplineSceneEditor : Editor
 
         Handles.color = Color.white;
 
-        Vector3 sstartPoint = Vector3.zero;
+        Vector3 startPoint = Vector3.zero;
 
         for (float quantity = 0f; quantity <= 1f; quantity += positionDistance)
         {
             Vector3 endPoint = controller.EvaluateFromMatrix(quantity);
 
             if (quantity > 0f)
-                Handles.DrawLine(sstartPoint, endPoint);
+                Handles.DrawLine(startPoint, endPoint);
 
-            sstartPoint = endPoint;
+            startPoint = endPoint;
         }
     }
 
