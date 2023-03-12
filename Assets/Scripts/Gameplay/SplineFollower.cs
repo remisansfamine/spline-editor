@@ -28,7 +28,6 @@ public class SplineFollower : MonoBehaviour
         Vector3 direction = Vector3.Normalize(nextPosition - currentPosition);
 
         transform.position = currentPosition;
-
-        transform.rotation = Quaternion.LookRotation(Vector3.up, direction);
+        transform.forward = direction;
     }
 }
