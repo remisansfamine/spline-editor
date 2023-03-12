@@ -52,7 +52,7 @@ public class SplineController : MonoBehaviour
 
         float correctU = useContinuityApproximation ? GetRemappedU(u) : u;
 
-        Vector3 pointLocalPosition = splineFormula.EvaluateFromPolynomial(correctU, inputPoints);
+        Vector3 pointLocalPosition = splineFormula.EvaluatePosition(correctU, inputPoints);
 
         if (!isTransformBounded)
             return pointLocalPosition;
@@ -67,7 +67,7 @@ public class SplineController : MonoBehaviour
 
         float correctU = useContinuityApproximation ? GetRemappedU(u) : u;
 
-        Vector3 pointLocalPosition = splineFormula.EvaluateFromMatrix(correctU, inputPoints);
+        Vector3 pointLocalPosition = splineFormula.EvaluatePosition(correctU, inputPoints);
 
         if (!isTransformBounded)
             return pointLocalPosition;
@@ -89,7 +89,7 @@ public class SplineController : MonoBehaviour
         float distance = 0f;
         for (float quantity = 0f; quantity < 1f; quantity += continuityAccuracy)
         {
-            Vector3 currentPoint = splineFormula.EvaluateFromMatrix(quantity, inputPoints);
+            Vector3 currentPoint = splineFormula.EvaluatePosition(quantity, inputPoints);
 
             float currentDistance = 0f;
 

@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BSpline", menuName = "Splines/BSpline", order = 1)]
-public class BSpline : SplineDescriptor
+public class BSpline : MultiModeSpline
 {
     private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) / 6f,
                                                                            new Vector4( 3f,-6f, 3f, 0f) / 6f,
