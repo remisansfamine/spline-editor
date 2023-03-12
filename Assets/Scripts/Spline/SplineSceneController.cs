@@ -51,7 +51,7 @@ public class SplineSceneEditor : Editor
                 else
                 {
                     controller.InsertPoint(pointID);
-                    insertedPoint = pointID; 
+                    insertedPoint = pointID;
                 }
             }
 
@@ -65,7 +65,7 @@ public class SplineSceneEditor : Editor
 
         switch (controller.SplineFormula)
         {
-            case HermitianSpline hermitian:
+            case HermitianSpline:
                 for (int pointID = 0; pointID < controller.GetInputPointCount(); pointID += 2)
                 {
                     Vector3 position = controller.GetInputPoint(pointID + 0);
@@ -74,7 +74,7 @@ public class SplineSceneEditor : Editor
                 }
                 break;
 
-            case BezierSpline bezier:
+            case BezierSpline:
                 for (int PointId = 0; PointId < controller.GetInputPointCount(); PointId += 3)
                 {
                     Vector3 position = controller.GetInputPoint(PointId + 0);
@@ -93,7 +93,8 @@ public class SplineSceneEditor : Editor
                 }
                 break;
 
-            case BSpline bspline:
+            case BSpline:
+            case CatmullRomSpline:
                 for (int PointId = 0; PointId < controller.GetInputPointCount() - 1; PointId++)
                 {
                     Vector3 positionA = controller.GetInputPoint(PointId + 0);
