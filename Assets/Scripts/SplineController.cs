@@ -1,20 +1,23 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.Events;
 
 public class SplineController : MonoBehaviour
 {
     [SerializeField] private List<Vector3> inputPoints = new List<Vector3>();
     [SerializeField] private float continuityAccuracy = 0.01f;
-    private float totalLength = 0f;
+    public float totalLength { get; private set; } = 0f;
     [SerializeField] private List<float> cumulativeDistances = new List<float>();
     [SerializeField] private bool useContinuityApproximation = true;
 
     [SerializeField] private SplineDescriptor splineFormula = null;
 
+    public UnityEvent OnSplineUpdated = new UnityEvent();
+
     public SplineDescriptor SplineFormula => splineFormula;
+
+    [SerializeField] private bool isTransformBounded = true;
 
     private float GetUFromLength(float length)
     {
@@ -47,10 +50,14 @@ public class SplineController : MonoBehaviour
         if (!splineFormula)
             return Vector3.zero;
 
-        if (useContinuityApproximation)
-            return splineFormula.EvaluateFromPolynomial(GetRemappedU(u), inputPoints);
+        float correctU = useContinuityApproximation ? GetRemappedU(u) : u;
 
-        return splineFormula.EvaluateFromPolynomial(u, inputPoints);
+        Vector3 pointLocalPosition = splineFormula.EvaluateFromPolynomial(correctU, inputPoints);
+
+        if (!isTransformBounded)
+            return pointLocalPosition;
+
+        return transform.TransformPoint(pointLocalPosition);
     }
 
     public Vector3 EvaluateFromMatrix(float u)
@@ -58,10 +65,14 @@ public class SplineController : MonoBehaviour
         if (!splineFormula)
             return Vector3.zero;
 
-        if (useContinuityApproximation)
-            return splineFormula.EvaluateFromMatrix(GetRemappedU(u), inputPoints);
+        float correctU = useContinuityApproximation ? GetRemappedU(u) : u;
 
-        return splineFormula.EvaluateFromMatrix(u, inputPoints);
+        Vector3 pointLocalPosition = splineFormula.EvaluateFromMatrix(correctU, inputPoints);
+
+        if (!isTransformBounded)
+            return pointLocalPosition;
+
+        return transform.TransformPoint(pointLocalPosition);
     }
 
     public bool IsPointAKnot(int pointID) => splineFormula ? splineFormula.IsPointAKnot(pointID) : false;
@@ -70,7 +81,7 @@ public class SplineController : MonoBehaviour
     {
         cumulativeDistances.Clear();
 
-        if (!useContinuityApproximation || !splineFormula)
+        if (!splineFormula)
             return;
 
         Vector3 previousPoint = Vector3.zero;
@@ -98,9 +109,14 @@ public class SplineController : MonoBehaviour
         if (!splineFormula)
             return;
 
-        splineFormula.SetInputPoint(pointID, position, inputPoints);
+        Vector3 pointLocalPosition = position;
 
-        ComputeDistances();
+        if (isTransformBounded)
+            pointLocalPosition = transform.InverseTransformPoint(pointLocalPosition);
+
+        splineFormula.SetInputPoint(pointID, pointLocalPosition, inputPoints);
+
+        SetDirty();
     }
 
     public int InsertPoint(int pointID)
@@ -110,16 +126,31 @@ public class SplineController : MonoBehaviour
 
         int insertedPointID = splineFormula.InsertPoint(pointID, inputPoints);
 
-        ComputeDistances();
+        SetDirty();
 
         return insertedPointID;
     }
 
-    public Vector3 GetInputPoint(int pointID) => inputPoints[pointID];
+    public Vector3 GetInputPoint(int pointID)
+    {
+        Vector3 pointLocalPosition = inputPoints[pointID];
+
+        if (!isTransformBounded)
+            return pointLocalPosition;
+
+        return transform.TransformPoint(pointLocalPosition);
+    }
+
     public int GetInputPointCount() => inputPoints.Count;
 
     private void OnValidate()
     {
+        SetDirty();
+    }
+
+    private void SetDirty()
+    {
         ComputeDistances();
+        OnSplineUpdated.Invoke();
     }
 }

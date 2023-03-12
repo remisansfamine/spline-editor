@@ -9,7 +9,7 @@ public class SplineRenderer : MonoBehaviour
     private LineRenderer lineRdr = null;
     private SplineController controller = null;
 
-    [SerializeField] private float positionDistance = 10f;
+    [SerializeField] private float precision = 0.01f;
     private float step = 0f;
 
     private void Awake()
@@ -18,18 +18,29 @@ public class SplineRenderer : MonoBehaviour
         controller = GetComponent<SplineController>();
     }
 
-    void Update()
+    private void OnEnable()
     {
-        step = 1f / positionDistance;
-        lineRdr.positionCount = Mathf.RoundToInt(step);
+        controller.OnSplineUpdated.AddListener(UpdateLineRenderer);
+        UpdateLineRenderer();
+    }
 
-        for (float quantity = 0f; quantity < 1f; quantity += positionDistance)
+    private void OnDisable()
+    {
+        controller.OnSplineUpdated.RemoveListener(UpdateLineRenderer);
+    }
+
+    void UpdateLineRenderer()
+    {
+        step = 1f / precision;
+        lineRdr.positionCount = Mathf.RoundToInt(step) + 1;
+
+        int pointID = 0;
+        for (float quantity = 0f; quantity <= 1f; quantity += precision)
         {
-            int PointId = (int)(lineRdr.positionCount * quantity);
+            Vector3 LinePoint = controller.EvaluateFromMatrix(quantity);
 
-            Vector3 LinePoint = controller.EvaluateFromPolynomial(quantity);
-
-            lineRdr.SetPosition(PointId, LinePoint);
+            lineRdr.SetPosition(pointID, LinePoint);
+            pointID++;
         }
     }
 }
