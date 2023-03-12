@@ -13,7 +13,7 @@ public class SplineController : MonoBehaviour
 
     [SerializeField] private SplineDescriptor splineFormula = null;
 
-    public UnityEvent OnSplineUpdated = new UnityEvent();
+    public UnityEvent<bool> OnSplineUpdated = new UnityEvent<bool>();
 
     public SplineDescriptor SplineFormula => splineFormula;
 
@@ -145,12 +145,13 @@ public class SplineController : MonoBehaviour
 
     private void OnValidate()
     {
-        SetDirty();
+        SetDirty(true);
+
     }
 
-    private void SetDirty()
+    private void SetDirty(bool calledOnValidate = false)
     {
         ComputeDistances();
-        OnSplineUpdated.Invoke();
+        OnSplineUpdated.Invoke(calledOnValidate);
     }
 }

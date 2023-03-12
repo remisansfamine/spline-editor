@@ -18,14 +18,14 @@ public class PillarGenerator : MonoBehaviour
 
     private void OnEnable()
     {
-        splineController.OnSplineUpdated.AddListener(ImmediatePillarsUpdate);
-        UnimmediatePillarsUpdate();
+        splineController.OnSplineUpdated.AddListener(UpdatePillars);
+        UpdatePillars(false);
     }
 
     private void OnDisable()
     {
-        ResetPillars(false);
-        splineController.OnSplineUpdated.RemoveListener(ImmediatePillarsUpdate);
+        ResetPillars(true);
+        splineController.OnSplineUpdated.RemoveListener(UpdatePillars);
     }
 
     void ResetPillars(bool Immediate)
@@ -42,15 +42,9 @@ public class PillarGenerator : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    void UnimmediatePillarsUpdate()
+    void UpdatePillars(bool calledOnValidate)
     {
-        ResetPillars(false);
-        CreatePillars();
-    }
-
-    void ImmediatePillarsUpdate()
-    {
-        ResetPillars(true);
+        ResetPillars(!calledOnValidate);
         CreatePillars();
     }
 
