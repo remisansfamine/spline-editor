@@ -45,7 +45,7 @@ public class SplineController : MonoBehaviour
 
     private float GetRemappedU(float u) => GetUFromLength(totalLength * u);
 
-    public Vector3 EvaluateFromPolynomial(float u)
+    public Vector3 EvaluatePosition(float u)
     {
         if (!splineFormula)
             return Vector3.zero;
@@ -60,19 +60,19 @@ public class SplineController : MonoBehaviour
         return transform.TransformPoint(pointLocalPosition);
     }
 
-    public Vector3 EvaluateFromMatrix(float u)
+    public Vector3 EvaluateTangent(float u)
     {
         if (!splineFormula)
             return Vector3.zero;
 
         float correctU = useContinuityApproximation ? GetRemappedU(u) : u;
 
-        Vector3 pointLocalPosition = splineFormula.EvaluatePosition(correctU, inputPoints);
+        Vector3 pointLocalPosition = splineFormula.EvaluateTangent(correctU, inputPoints);
 
         if (!isTransformBounded)
             return pointLocalPosition;
 
-        return transform.TransformPoint(pointLocalPosition);
+        return transform.TransformVector(pointLocalPosition);
     }
 
     public bool IsPointAKnot(int pointID) => splineFormula ? splineFormula.IsPointAKnot(pointID) : false;

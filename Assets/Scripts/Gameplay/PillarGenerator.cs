@@ -58,7 +58,7 @@ public class PillarGenerator : MonoBehaviour
     {
         for (float quantity = 0f; quantity <= 1f; quantity += precision)
         {
-            Vector3 stepPoint = splineController.EvaluateFromMatrix(quantity);
+            Vector3 stepPoint = splineController.EvaluatePosition(quantity);
 
             if (!Physics.Raycast(stepPoint, Vector3.down, out RaycastHit hit, maxCastDistance))
                 continue;
