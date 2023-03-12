@@ -15,6 +15,8 @@ public class BezierSpline : MultiModeSpline
         NONE
     }
 
+    [SerializeField] private bool useBersteinPolynomial = false;
+
     [SerializeField] private ETangentType tangentType = ETangentType.COLLINEAR;
 
     [SerializeField] private int controlPointsCount = 4;
@@ -23,6 +25,11 @@ public class BezierSpline : MultiModeSpline
                                                                                    new Vector4( 3f,-6f, 3f, 0f),
                                                                                    new Vector4(-3f, 3f, 0f, 0f),
                                                                                    new Vector4( 1f, 0f, 0f, 0f));
+
+    private static readonly Matrix4x4 tangentCharacteristicMatrix = new Matrix4x4(new Vector4( 0f, 0f, 0f, 0f),
+                                                                                  new Vector4(-3f, 9f,-9f, 3f),
+                                                                                  new Vector4( 6f,-12f, 6f, 0f),
+                                                                                  new Vector4(-3f, 3f, 0f, 0f));
 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
@@ -66,7 +73,7 @@ public class BezierSpline : MultiModeSpline
         return Binomial(n, i) * tPowi * tnMinusi;
     }
 
-    public Vector3 LocalEvaluatePositionFromPolynomial(float t, List<Vector3> intervalPoints)
+    public Vector3 BersteinPolynomial(float t, List<Vector3> intervalPoints)
     {
         Vector3 Result = Vector3.zero;
 
@@ -82,6 +89,31 @@ public class BezierSpline : MultiModeSpline
         return Result;
     }
 
+    public Vector3 CubicPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        Vector3 pointA = intervalPoints[0];
+        Vector3 pointB = intervalPoints[1];
+        Vector3 pointC = intervalPoints[2];
+        Vector3 pointD = intervalPoints[3];
+
+        float tSqr = t * t;
+        float tCube = tSqr * t;
+
+        float oneMinusT = 1f - t;
+
+        float a = Mathf.Pow(oneMinusT, 3f);
+        float b = 3f * t * Mathf.Pow(oneMinusT, 2f);
+        float c = 3f * tSqr * oneMinusT;
+        float d = tCube;
+
+        return a * pointA + b * pointB + c * pointC + d * pointD;
+    }
+
+    public Vector3 LocalEvaluatePositionFromPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        return useBersteinPolynomial ? BersteinPolynomial(t, intervalPoints) : CubicPolynomial(t, intervalPoints);
+    }
+
     public override Vector3 EvaluatePositionFromPolynomial(float u, List<Vector3> inputPoints)
     {
         (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
@@ -91,6 +123,32 @@ public class BezierSpline : MultiModeSpline
         return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
     }
 
+    public Vector3 LocalEvaluateTangentFromPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        Vector3 pointA = intervalPoints[0];
+        Vector3 pointB = intervalPoints[1];
+        Vector3 pointC = intervalPoints[2];
+        Vector3 pointD = intervalPoints[3];
+
+        float tSqr = t * t;
+
+        float a = -3f * tSqr + 6f * t - 3f;
+        float b = 9f * tSqr - 12f * t + 3f;
+        float c = -9f * tSqr + 6f * t;
+        float d = 3f * tSqr;
+
+        return a * pointA + b * pointB + c * pointC + d * pointD;
+    }
+
+    public override Vector3 EvaluateTangentFromPolynomial(float u, List<Vector3> inputPoints)
+    {
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
+
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, controlPointsCount);
+
+        return LocalEvaluateTangentFromPolynomial(t, intervalPoints);
+    }
+
     public override Vector4 GetTimeVector(float time)
     {
         float timeSqr = time * time;
@@ -98,6 +156,7 @@ public class BezierSpline : MultiModeSpline
         return new Vector4(timeCube, timeSqr, time, 1f);
     }
     public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
+    public override Matrix4x4 GetTangentCharacteristicMatrix() => tangentCharacteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {

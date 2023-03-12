@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fe3ca22be2e5c40b856bcede8230a5, type: 3}
   m_Name: BSpline
   m_EditorClassIdentifier: 
-  controlPointsCount: 4
+  calculationMode: 1

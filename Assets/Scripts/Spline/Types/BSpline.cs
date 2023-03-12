@@ -70,7 +70,7 @@ public class BSpline : MultiModeSpline
 
         float a = -3f * Mathf.Pow(1f - t, 2f);
         float b = 9f * tSqr - 12f * t;
-        float c = 3f * (-3f * tSqr + 2f * t + 1f);
+        float c = -9f * tSqr + 6f * t + 3f;
         float d = 3f * tSqr;
 
         return 1f / 6f * (a * pointA + b * pointB + c * pointC + d * pointD);
