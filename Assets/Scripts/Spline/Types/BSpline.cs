@@ -11,6 +11,11 @@ public class BSpline : MultiModeSpline
                                                                                    new Vector4(-3f, 0f, 3f, 0f) / 6f,
                                                                                    new Vector4( 1f, 4f, 1f, 0f) / 6f);
 
+    private static readonly Matrix4x4 tangentCharacteristicMatrix = new Matrix4x4(new Vector4( 0f,  0f, 0f, 0f) / 6f,
+                                                                                  new Vector4(-3f,  9f,-9f, 3f) / 6f,
+                                                                                  new Vector4( 6f,-12f, 6f, 0f) / 6f,
+                                                                                  new Vector4(-3f,  0f, 3f, 0f) / 6f);
+ 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
         int knotCount = inputCount;
@@ -54,6 +59,34 @@ public class BSpline : MultiModeSpline
         return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
     }
 
+    public Vector3 LocalEvaluateTangentFromPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        Vector3 pointA = intervalPoints[0];
+        Vector3 pointB = intervalPoints[1];
+        Vector3 pointC = intervalPoints[2];
+        Vector3 pointD = intervalPoints[3];
+
+        float tSqr = t * t;
+        float tCube = tSqr * t;
+
+        float a = -3f * Mathf.Pow(1f - t, 2f);
+        float b = 9f * tSqr - 12f * t;
+        float c = 3f * (-3f * tSqr + 2f * t + 1f);
+        float d = 3f * tSqr;
+
+        return 1f / 6f * (a * pointA + b * pointB + c * pointC + d * pointD);
+    }
+
+
+    public override Vector3 EvaluateTangentFromPolynomial(float u, List<Vector3> inputPoints)
+    {
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
+
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
+
+        return LocalEvaluateTangentFromPolynomial(t, intervalPoints);
+    }
+
     public override Vector4 GetTimeVector(float time)
     {
         float timeSqr = time * time;
@@ -61,6 +94,7 @@ public class BSpline : MultiModeSpline
         return new Vector4(timeCube, timeSqr, time, 1f);
     }
     public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
+    public override Matrix4x4 GetTangentCharacteristicMatrix() => tangentCharacteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {
