@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "HermitianSpline", menuName = "Splines/HermitianSpline", order = 1)]
-public class HermitianSpline : SplineDescriptor
+public class HermitianSpline : MultiModeSpline
 {
     private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
                                                                            new Vector4(-3f, 3f,-2f,-1f),

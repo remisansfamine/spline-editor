@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SplineDescriptor : ScriptableObject
+public abstract class SplineDescriptor : ScriptableObject
 {
     public virtual (float t, int startingPoint) GetLocalParameters(float u, int inputCount) => (0f, 0);
 
@@ -11,15 +11,7 @@ public class SplineDescriptor : ScriptableObject
     public virtual Matrix4x4 GetCharacteristicMatrix() => throw new NotImplementedException();
     public virtual Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints) => throw new NotImplementedException();
 
-    public virtual Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints) => Vector3.zero;
-    public virtual Vector3 EvaluateFromMatrix(float u, List<Vector3> inputPoints)
-    {
-        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
-
-        List<Vector3> intervallePoints = inputPoints.GetRange(startingPoint, 4);
-
-        return GetGeometryMatrix(intervallePoints) * GetCharacteristicMatrix() * GetTimeVector(t);
-    }
+    public abstract Vector3 EvaluatePosition(float u, List<Vector3> inputPoints);
 
     public virtual bool IsPointAKnot(int pointID) => false;
 

@@ -5,17 +5,17 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [CreateAssetMenu(fileName = "BezierSpline", menuName = "Splines/BezierSpline", order = 1)]
-public class BezierSpline : SplineDescriptor
+public class BezierSpline : MultiModeSpline
 {
     enum ETangentType
     {
-        Separated,
-        Collinear,
-        Mirrored,
-        None
+        SEPARATED,
+        COLLINEAR,
+        MIRRORED,
+        NONE
     }
 
-    [SerializeField] private ETangentType tangentType;
+    [SerializeField] private ETangentType tangentType = ETangentType.COLLINEAR;
 
     [SerializeField] private int controlPointsCount = 4;
 
@@ -136,7 +136,7 @@ public class BezierSpline : SplineDescriptor
 
     private Vector3 GetTwinTangentPosition(ETangentType modifierType, Vector3 knotPosition, Vector3 currentTangentPosition, Vector3 lastTwinTangentPosition)
     {
-        return modifierType == ETangentType.Mirrored ? GetMirrorTangentPosition(knotPosition, currentTangentPosition) : GetCollinearTangentPosition(knotPosition, currentTangentPosition, lastTwinTangentPosition);
+        return modifierType == ETangentType.MIRRORED ? GetMirrorTangentPosition(knotPosition, currentTangentPosition) : GetCollinearTangentPosition(knotPosition, currentTangentPosition, lastTwinTangentPosition);
     }
 
     public void SetTangentTwin(int pointID, Vector3 position, List<Vector3> inputPoints)
@@ -170,7 +170,7 @@ public class BezierSpline : SplineDescriptor
 
         base.SetInputPoint(pointID, position, inputPoints);
 
-        if (tangentType != ETangentType.Separated)
+        if (tangentType != ETangentType.SEPARATED)
             SetTangentTwin(pointID, position, inputPoints);
     }
 

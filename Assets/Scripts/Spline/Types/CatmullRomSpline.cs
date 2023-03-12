@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CatmullRomSpline", menuName = "Splines/CatmullRomSpline", order = 1)]
-public class CatmullRomSpline : SplineDescriptor
+public class CatmullRomSpline : MultiModeSpline
 {
     private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) * 0.5f,
                                                                            new Vector4( 2f,-5f, 4f,-1f) * 0.5f,
