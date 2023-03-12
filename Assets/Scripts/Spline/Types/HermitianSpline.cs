@@ -11,6 +11,11 @@ public class HermitianSpline : MultiModeSpline
                                                                                    new Vector4( 0f, 0f, 1f, 0f),
                                                                                    new Vector4( 1f, 0f, 0f, 0f));
 
+    private static readonly Matrix4x4 tangentCharacteristicMatrix = new Matrix4x4(new Vector4( 0f, 0f, 0f, 0f),
+                                                                                  new Vector4( 6f,-6f, 3f, 3f),
+                                                                                  new Vector4(-6f, 6f,-4f,-2f),
+                                                                                  new Vector4( 0f, 0f, 1f, 0f));
+
     public override bool IsPointAKnot(int pointID) => pointID % 2 == 0;
 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
@@ -54,6 +59,32 @@ public class HermitianSpline : MultiModeSpline
         return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
     }
 
+    public Vector3 LocalEvaluateTangentFromPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        Vector3 pointA = intervalPoints[0];
+        Vector3 derivA = intervalPoints[1] - pointA;
+
+        Vector3 pointB = intervalPoints[2];
+        Vector3 derivB = intervalPoints[3] - pointB;
+
+        float tSqr = t * t;
+
+        float a = 6f * (tSqr - t);
+        float c = 3f * tSqr - 4f * t + 1f;
+        float d = 3f * tSqr - 2f * t;
+
+        return a * (pointA - pointB) + c * derivA + d * derivB;
+    }
+
+    public override Vector3 EvaluateTangentFromPolynomial(float u, List<Vector3> inputPoints)
+    {
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
+
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
+
+        return LocalEvaluateTangentFromPolynomial(t, intervalPoints);
+    }
+
     public override Vector4 GetTimeVector(float t)
     {
         float tSqr = t * t;
@@ -62,6 +93,7 @@ public class HermitianSpline : MultiModeSpline
         return new Vector4(tCube, tSqr, t, 1f);
     }
     public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
+    public override Matrix4x4 GetTangentCharacteristicMatrix() => tangentCharacteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {
