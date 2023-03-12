@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07ef600c3e6d5694aacd78b4e0700cc3, type: 3}
   m_Name: HermitianSpline
   m_EditorClassIdentifier: 
+  calculationMode: 0
