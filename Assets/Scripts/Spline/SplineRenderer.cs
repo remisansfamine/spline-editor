@@ -20,7 +20,7 @@ public class SplineRenderer : MonoBehaviour
     private void OnEnable()
     {
         controller.OnSplineUpdated.AddListener(UpdateLineRenderer);
-        UpdateLineRenderer();
+        UpdateLineRenderer(false);
     }
 
     private void OnDisable()
@@ -28,7 +28,7 @@ public class SplineRenderer : MonoBehaviour
         controller.OnSplineUpdated.RemoveListener(UpdateLineRenderer);
     }
 
-    void UpdateLineRenderer()
+    void UpdateLineRenderer(bool calledOnValidate)
     {
         float step = 1f / precision;
         lineRdr.positionCount = Mathf.RoundToInt(step) + 1;
