@@ -19,10 +19,10 @@ public class BezierSpline : MultiModeSpline
 
     [SerializeField] private int controlPointsCount = 4;
 
-    private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f),
-                                                                           new Vector4( 3f,-6f, 3f, 0f),
-                                                                           new Vector4(-3f, 3f, 0f, 0f),
-                                                                           new Vector4( 1f, 0f, 0f, 0f));
+    private static readonly Matrix4x4 positionCharacteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f),
+                                                                                   new Vector4( 3f,-6f, 3f, 0f),
+                                                                                   new Vector4(-3f, 3f, 0f, 0f),
+                                                                                   new Vector4( 1f, 0f, 0f, 0f));
 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
@@ -66,7 +66,7 @@ public class BezierSpline : MultiModeSpline
         return Binomial(n, i) * tPowi * tnMinusi;
     }
 
-    public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
+    public Vector3 LocalEvaluatePositionFromPolynomial(float t, List<Vector3> intervalPoints)
     {
         Vector3 Result = Vector3.zero;
 
@@ -82,13 +82,13 @@ public class BezierSpline : MultiModeSpline
         return Result;
     }
 
-    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
+    public override Vector3 EvaluatePositionFromPolynomial(float u, List<Vector3> inputPoints)
     {
         (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
 
         List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, controlPointsCount);
 
-        return LocalEvaluateFromPolynomial(t, intervalPoints);
+        return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
     }
 
     public override Vector4 GetTimeVector(float time)
@@ -97,7 +97,7 @@ public class BezierSpline : MultiModeSpline
         float timeCube = timeSqr * time;
         return new Vector4(timeCube, timeSqr, time, 1f);
     }
-    public override Matrix4x4 GetCharacteristicMatrix() => characteristicMatrix;
+    public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {

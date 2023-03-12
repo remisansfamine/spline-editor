@@ -36,7 +36,7 @@ public class SplineRenderer : MonoBehaviour
         int pointID = 0;
         for (float quantity = 0f; quantity <= 1f; quantity += precision)
         {
-            Vector3 LinePoint = controller.EvaluateFromMatrix(quantity);
+            Vector3 LinePoint = controller.EvaluatePosition(quantity);
 
             lineRdr.SetPosition(pointID, LinePoint);
             pointID++;

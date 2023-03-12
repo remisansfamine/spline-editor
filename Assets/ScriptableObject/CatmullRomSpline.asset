@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e829214e479670c44af18125706391f4, type: 3}
   m_Name: CatmullRomSpline
   m_EditorClassIdentifier: 
+  calculationMode: 1

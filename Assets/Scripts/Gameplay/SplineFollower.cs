@@ -19,15 +19,14 @@ public class SplineFollower : MonoBehaviour
 
         avancement += frameSpeed;
 
-        Vector3 currentPosition = splineToFollow.EvaluateFromMatrix(avancement);
-        Vector3 nextPosition = splineToFollow.EvaluateFromMatrix(avancement + frameSpeed);
+        Vector3 currentPosition = splineToFollow.EvaluatePosition(avancement);
 
         if (avancement >= 1f || avancement <= 0f)
             motionSign = -motionSign;
 
-        Vector3 direction = Vector3.Normalize(nextPosition - currentPosition);
+        Vector3 direction = splineToFollow.EvaluateTangent(avancement);
 
         transform.position = currentPosition;
-        transform.forward = direction;
+        transform.forward = motionSign * direction;
     }
 }

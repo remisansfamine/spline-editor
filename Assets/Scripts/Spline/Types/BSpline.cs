@@ -6,10 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BSpline", menuName = "Splines/BSpline", order = 1)]
 public class BSpline : MultiModeSpline
 {
-    private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) / 6f,
-                                                                           new Vector4( 3f,-6f, 3f, 0f) / 6f,
-                                                                           new Vector4(-3f, 0f, 3f, 0f) / 6f,
-                                                                           new Vector4( 1f, 4f, 1f, 0f) / 6f);
+    private static readonly Matrix4x4 positionCharacteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) / 6f,
+                                                                                   new Vector4( 3f,-6f, 3f, 0f) / 6f,
+                                                                                   new Vector4(-3f, 0f, 3f, 0f) / 6f,
+                                                                                   new Vector4( 1f, 4f, 1f, 0f) / 6f);
 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
@@ -26,7 +26,7 @@ public class BSpline : MultiModeSpline
 
     public override bool IsPointAKnot(int PointID) => true;
 
-    public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
+    public Vector3 LocalEvaluatePositionFromPolynomial(float t, List<Vector3> intervalPoints)
     {
         Vector3 pointA = intervalPoints[0];
         Vector3 pointB = intervalPoints[1];
@@ -45,13 +45,13 @@ public class BSpline : MultiModeSpline
     }
 
 
-    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
+    public override Vector3 EvaluatePositionFromPolynomial(float u, List<Vector3> inputPoints)
     {
         (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
 
         List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
 
-        return LocalEvaluateFromPolynomial(t, intervalPoints);
+        return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
     }
 
     public override Vector4 GetTimeVector(float time)
@@ -60,7 +60,7 @@ public class BSpline : MultiModeSpline
         float timeCube = timeSqr * time;
         return new Vector4(timeCube, timeSqr, time, 1f);
     }
-    public override Matrix4x4 GetCharacteristicMatrix() => characteristicMatrix;
+    public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {

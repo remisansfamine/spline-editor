@@ -6,10 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "HermitianSpline", menuName = "Splines/HermitianSpline", order = 1)]
 public class HermitianSpline : MultiModeSpline
 {
-    private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
-                                                                           new Vector4(-3f, 3f,-2f,-1f),
-                                                                           new Vector4( 0f, 0f, 1f, 0f),
-                                                                           new Vector4( 1f, 0f, 0f, 0f));
+    private static readonly Matrix4x4 positionCharacteristicMatrix = new Matrix4x4(new Vector4( 2f,-2f, 1f, 1f),
+                                                                                   new Vector4(-3f, 3f,-2f,-1f),
+                                                                                   new Vector4( 0f, 0f, 1f, 0f),
+                                                                                   new Vector4( 1f, 0f, 0f, 0f));
 
     public override bool IsPointAKnot(int pointID) => pointID % 2 == 0;
 
@@ -26,7 +26,7 @@ public class HermitianSpline : MultiModeSpline
         return (t, startingPoint);
     }
 
-    public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
+    public Vector3 LocalEvaluatePositionFromPolynomial(float t, List<Vector3> intervalPoints)
     {
         Vector3 pointA = intervalPoints[0];
         Vector3 derivA = intervalPoints[1] - pointA;
@@ -45,13 +45,13 @@ public class HermitianSpline : MultiModeSpline
         return a * pointA + b * pointB + c * derivA + d * derivB;
     }
 
-    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
+    public override Vector3 EvaluatePositionFromPolynomial(float u, List<Vector3> inputPoints)
     {
         (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
 
         List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
 
-        return LocalEvaluateFromPolynomial(t, intervalPoints);
+        return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
     }
 
     public override Vector4 GetTimeVector(float t)
@@ -61,7 +61,7 @@ public class HermitianSpline : MultiModeSpline
 
         return new Vector4(tCube, tSqr, t, 1f);
     }
-    public override Matrix4x4 GetCharacteristicMatrix() => characteristicMatrix;
+    public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {

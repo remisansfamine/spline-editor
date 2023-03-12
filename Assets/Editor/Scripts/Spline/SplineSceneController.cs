@@ -115,7 +115,7 @@ public class SplineSceneEditor : Editor
 
         for (float quantity = 0f; quantity <= 1f; quantity += positionDistance)
         {
-            Vector3 endPoint = controller.EvaluateFromMatrix(quantity);
+            Vector3 endPoint = controller.EvaluatePosition(quantity);
 
             if (quantity > 0f)
                 Handles.DrawLine(startPoint, endPoint);

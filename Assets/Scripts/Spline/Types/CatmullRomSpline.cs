@@ -7,10 +7,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CatmullRomSpline", menuName = "Splines/CatmullRomSpline", order = 1)]
 public class CatmullRomSpline : MultiModeSpline
 {
-    private static readonly Matrix4x4 characteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) * 0.5f,
-                                                                           new Vector4( 2f,-5f, 4f,-1f) * 0.5f,
-                                                                           new Vector4(-1f, 0f, 1f, 0f) * 0.5f,
-                                                                           new Vector4( 0f, 2f, 0f, 0f) * 0.5f);
+    private static readonly Matrix4x4 positionCharacteristicMatrix = new Matrix4x4(new Vector4(-1f, 3f,-3f, 1f) * 0.5f,
+                                                                                   new Vector4( 2f,-5f, 4f,-1f) * 0.5f,
+                                                                                   new Vector4(-1f, 0f, 1f, 0f) * 0.5f,
+                                                                                   new Vector4( 0f, 2f, 0f, 0f) * 0.5f);
+
+    private static readonly Matrix4x4 tangentCharacteristicMatrix = new Matrix4x4(new Vector4( 0f,  0f, 0f, 0f) * 0.5f,
+                                                                                  new Vector4(-3f,  9f,-9f, 3f) * 0.5f,
+                                                                                  new Vector4( 4f,-10f, 8f,-2f) * 0.5f,
+                                                                                  new Vector4(-1f,  0f, 1f, 0f) * 0.5f);
 
     public override (float t, int startingPoint) GetLocalParameters(float u, int inputCount)
     {
@@ -27,7 +32,7 @@ public class CatmullRomSpline : MultiModeSpline
 
     public override bool IsPointAKnot(int pointID) => true;
 
-    public Vector3 LocalEvaluateFromPolynomial(float t, List<Vector3> intervalPoints)
+    public Vector3 LocalEvaluatePositionFromPolynomial(float t, List<Vector3> intervalPoints)
     {
         Vector3 pointA = intervalPoints[0];
         Vector3 pointB = intervalPoints[1];
@@ -45,13 +50,39 @@ public class CatmullRomSpline : MultiModeSpline
         return 0.5f * (a * pointA + b * pointB + c * pointC + d * pointD);
     }
 
-    public override Vector3 EvaluateFromPolynomial(float u, List<Vector3> inputPoints)
+    public Vector3 LocalEvaluateTangentFromPolynomial(float t, List<Vector3> intervalPoints)
+    {
+        Vector3 pointA = intervalPoints[0];
+        Vector3 pointB = intervalPoints[1];
+        Vector3 pointC = intervalPoints[2];
+        Vector3 pointD = intervalPoints[3];
+
+        float tSqr = t * t;
+
+        float a = -3f * tSqr + 4f * t - 1;
+        float b = 9f * tSqr - 10f * t;
+        float c = -9f * tSqr + 8f * t + 1;
+        float d = 3f * tSqr - 2f * t;
+
+        return 0.5f * (a * pointA + b * pointB + c * pointC + d * pointD);
+    }
+
+    public override Vector3 EvaluatePositionFromPolynomial(float u, List<Vector3> inputPoints)
     {
         (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
 
         List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
 
-        return LocalEvaluateFromPolynomial(t, intervalPoints);
+        return LocalEvaluatePositionFromPolynomial(t, intervalPoints);
+    }
+
+    public override Vector3 EvaluateTangentFromPolynomial(float u, List<Vector3> inputPoints)
+    {
+        (float t, int startingPoint) = GetLocalParameters(u, inputPoints.Count);
+
+        List<Vector3> intervalPoints = inputPoints.GetRange(startingPoint, 4);
+
+        return LocalEvaluateTangentFromPolynomial(t, intervalPoints);
     }
 
     public override Vector4 GetTimeVector(float time)
@@ -60,7 +91,9 @@ public class CatmullRomSpline : MultiModeSpline
         float timeCube = timeSqr * time;
         return new Vector4(timeCube, timeSqr, time, 1f);
     }
-    public override Matrix4x4 GetCharacteristicMatrix() => characteristicMatrix;
+    public override Matrix4x4 GetPositionCharacteristicMatrix() => positionCharacteristicMatrix;
+    public override Matrix4x4 GetTangentCharacteristicMatrix() => tangentCharacteristicMatrix;
+
 
     public override Matrix4x4 GetGeometryMatrix(List<Vector3> inputPoints)
     {
