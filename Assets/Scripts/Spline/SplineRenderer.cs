@@ -3,14 +3,13 @@ using System.ComponentModel;
 using UnityEditor;
 using UnityEngine;
 
-[RequireComponent(typeof(LineRenderer), typeof(SplineController))]
+[RequireComponent(typeof(LineRenderer), typeof(SplineController)), ExecuteInEditMode]
 public class SplineRenderer : MonoBehaviour
 {
     private LineRenderer lineRdr = null;
     private SplineController controller = null;
 
     [SerializeField] private float precision = 0.01f;
-    private float step = 0f;
 
     private void Awake()
     {
@@ -31,7 +30,7 @@ public class SplineRenderer : MonoBehaviour
 
     void UpdateLineRenderer()
     {
-        step = 1f / precision;
+        float step = 1f / precision;
         lineRdr.positionCount = Mathf.RoundToInt(step) + 1;
 
         int pointID = 0;

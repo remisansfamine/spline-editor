@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6956333240878109920}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.51642, y: -12.226541, z: -7.4040194}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -54,7 +54,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 190055dadbe7ce94c839571cd15808b5, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -75,9 +75,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -145,7 +143,120 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af90abf4147e98b46a097af1b399ecd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputPoint: []
+  inputPoints:
+  - {x: -5, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 5, y: 0, z: 0}
+  - {x: 10, y: 0, z: 0}
+  continuityAccuracy: 0.01
+  cumulativeDistances:
+  - 0
+  - 0.05148983
+  - 0.10591984
+  - 0.16322994
+  - 0.22336006
+  - 0.2862501
+  - 0.35184002
+  - 0.42007017
+  - 0.49088
+  - 0.56420994
+  - 0.63999987
+  - 0.7181897
+  - 0.7987199
+  - 0.8815298
+  - 0.9665599
+  - 1.05375
+  - 1.14304
+  - 1.23437
+  - 1.3276801
+  - 1.4229102
+  - 1.5200002
+  - 1.6188903
+  - 1.7195203
+  - 1.8218303
+  - 1.9257605
+  - 2.0312502
+  - 2.1382403
+  - 2.24667
+  - 2.3564801
+  - 2.46761
+  - 2.5799997
+  - 2.6935897
+  - 2.8083196
+  - 2.9241295
+  - 3.0409594
+  - 3.158749
+  - 3.277439
+  - 3.3969688
+  - 3.5172787
+  - 3.6383085
+  - 3.7599983
+  - 3.8822882
+  - 4.005118
+  - 4.128428
+  - 4.2521577
+  - 4.3762474
+  - 4.500637
+  - 4.625267
+  - 4.750077
+  - 4.8750067
+  - 4.9999967
+  - 5.1249866
+  - 5.249917
+  - 5.374727
+  - 5.4993567
+  - 5.6237464
+  - 5.7478366
+  - 5.871567
+  - 5.9948764
+  - 6.1177063
+  - 6.239996
+  - 6.361686
+  - 6.4827156
+  - 6.6030254
+  - 6.7225556
+  - 6.841245
+  - 6.959035
+  - 7.075865
+  - 7.191674
+  - 7.3064046
+  - 7.4199944
+  - 7.5323844
+  - 7.643514
+  - 7.7533245
+  - 7.8617544
+  - 7.9687448
+  - 8.074235
+  - 8.1781645
+  - 8.280475
+  - 8.381104
+  - 8.479995
+  - 8.5770855
+  - 8.672316
+  - 8.765625
+  - 8.856955
+  - 8.946245
+  - 9.033435
+  - 9.118465
+  - 9.201275
+  - 9.281805
+  - 9.359995
+  - 9.435785
+  - 9.509116
+  - 9.579926
+  - 9.648155
+  - 9.713745
+  - 9.776635
+  - 9.836765
+  - 9.894075
+  - 9.948505
+  - 9.999995
+  useContinuityApproximation: 1
+  splineFormula: {fileID: 11400000, guid: edf855f56e9dd104a86d2444291b0e4a, type: 2}
+  OnSplineUpdated:
+    m_PersistentCalls:
+      m_Calls: []
+  isTransformBounded: 1
 --- !u!114 &6956333240878109855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,3 +269,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71d6d1ff89f2d994aa60533e1fa63130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  precision: 0.01
