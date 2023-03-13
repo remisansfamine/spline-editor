@@ -1,6 +1,5 @@
 # Roller Coaspline - **Unity/C#**
-### ISART DIGITAL GP3, School Project: *Rémi GINER*  
-<br>
+### ISART DIGITAL GP3, School Project: *Rémi GINER*
 
 <div style="text-align:center">
 
@@ -10,7 +9,8 @@
 
 <!-- ABOUT THE PROJECT -->
 # About The Project 
-**Built with Unity 2021.3.5f1**
+[![Unity](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/remisansfamine/spline-editor/master/ProjectSettings/ProjectVersion.txt&query=m_EditorVersion&logo=unity&label=Unity&color=grey)](https://unity.com)
+[![Gitlab](https://img.shields.io/badge/GitLab-292961?&logo=gitlab)](https://gitlab.com)
 
 The goal of this project is to develop a tool to create, edit and use Splines curves. This tool must then be used to apply curves in a "Video Game" context of our choice. I made the choice to develop a procedural generator of roller coaster track.
 
@@ -27,14 +27,11 @@ The goal of this project is to develop a tool to create, edit and use Splines cu
 
 
 # Features
-- Hermite spline
-- Bezier spline
-- B-spline
-- Catmull-Rom spline
+- Hermite Spline, Bezier Spline, B-Spline, Catmull-Rom Spline
 - Point insertion
 - Position evalution from polynomial and matrix
 - Tangent evalution from polynomial and matrix
-- Procedural generation from spline
+- Rail procedural generation from spline
 
 # Controls
 There is no character controller, to navigate in the scene you have to use the scene viewer no clip mode.
@@ -95,8 +92,49 @@ In each ScriptableObject information governing the shape of the Spline or how it
 
 </div>
 
+For each Spline the polynomials of the tangents were calculated by hand, the matrices were then filled from these formulas.
+
+<div style="text-align:center">
+
+![DescriptorEvaluations](Annexes/DescriptorEvaluations.png)
+
+</div>
 
 ## Gameplay Implementation
+
+### **Pillars generation**
+
+For the gameplay I decided to make a procedural generator of roller coaster tracks. The algorithm consists in making Raycasts every x time and placing a pillar at the contact point.
+
+<div style="text-align:center">
+
+![CreatePillars](Annexes/CreatePillars.png)
+
+</div>
+
+The rail is made of a LineRenderer that follows the Spline.
+
+<div style="text-align:center">
+
+![UpdateLineRenderer](Annexes/UpdateLineRenderer.png)
+
+</div>
+
+### **Kart motion**
+
+The kart also follows the Spline through the FixedUpdate, in order to have the right direction it evaluates the tangent of the Spline and uses it as a ForwardVector.
+
+<div style="text-align:center">
+
+![RollerCoaster](Annexes/RollerCoaster.gif)
+
+</div>
+
+<div style="text-align:center">
+
+![RollerCoaster](Annexes/KartMotion.png)
+
+</div>
 
 ## In the future:
 In the future, all this code will surely be ported to C++ on an house-made engine. The calculations to obtain the acceleration, the jerk/jolt at a time t, the patch will surely be implemented as well.
@@ -109,5 +147,6 @@ General references:
 ## Versionning
 Git Lab for the versioning.
 
-# Authors
-* **Rémi GINER**
+# Author
+[![itch.io](https://img.shields.io/badge/itch.io-%23FF0B34?logo=itch.io&logoColor=white)](https://remisansfamine.itch.io)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0072b1?logo=Linkedin)](https://www.linkedin.com/in/remi-giner)
