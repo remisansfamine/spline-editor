@@ -16,13 +16,14 @@ The goal of this project is to develop a tool to create, edit and use Splines cu
 
 # Table of contents
 1. [Features](#features)
-2. [Details](#details)
+2. [Controls](#controls)
+3. [Details](#details)
     - [Technical Implementation](#technical-implementation)
     - [Gameplay Implementation](#gameplay-implementation)
-3. [In the future](#itf)
-4. [References](#references)
-5. [Versionning](#versionning)
-6. [Autors](#authors)
+4. [In the future](#itf)
+5. [References](#references)
+6. [Versionning](#versionning)
+7. [Autors](#authors)
 
 
 # Features
@@ -34,6 +35,12 @@ The goal of this project is to develop a tool to create, edit and use Splines cu
 - Position evalution from polynomial and matrix
 - Tangent evalution from polynomial and matrix
 - Procedural generation from spline
+
+# Controls
+There is no character controller, to navigate in the scene you have to use the scene viewer no clip mode.
+- To change the current scene you have to use the Unity Content Browser.
+- To move a point you have to select the Spline and drag one of the point.
+- To insert a new point you have to select the Spline drag one of the point, and press Ctrl at the same time.
 
 # Details
 ## Technical Implementation
@@ -56,22 +63,43 @@ The Spline Controller also allows to give a spatial representation to the Spline
 
 </div>
 
-The Spline Controller also allows to store cached information like CumutativeDistances which allows to make the Spline more regular. This works on the principle of remapping the ``u`` value entered in the evaluation functions from pre-calculated distances.
+The Spline Controller also allows to store cached information like CumutativeDistances which allows to make the Spline more regular. This works on the principle of remapping the ``u`` value entered in the evaluation functions from pre-computed distances.
 
 Irregular spline|Regular spline
 :-:|:-:
 ![](Annexes/IrregularSpline.png)|![](Annexes/RegularSpline.png)
 
+### **Spline Scene Controller**
+To facilitate the use of Spline, a SceneController has been implemented. It allows to manage the position of the points from the GUI using Handles. It also allows to insert points when a point is dragged and Ctrl is pressed.
+
+<div style="text-align:center">
+
+![PointInsertion](Annexes/PointInsertion.gif)
+
+</div>
+
 ### **Spline Descriptor**
+
+To make the code more open, the formulas managing the shape of the Splines are coded in ScriptableObjects, so that they can be changed at any time in the SplineController. In this demo, the Hermite Spline, the Bezier Spline, the B-Spline and the Catmull-Rom Spline have been implemented. These Splines can work with polynomial and matrix formulas. They allow to evaluate their positions as well as their tangents.
 
 Hermite|Bezier|B-Spline|Catmull-Rom
 :-:|:-:|:-:|:-:
 ![](Annexes/Hermite.png)|![](Annexes/Bezier.png)|![](Annexes/BSpline.png)|![](Annexes/CatmullRom.png)
 
+In each ScriptableObject information governing the shape of the Spline or how it is evaluated can be modified. 
+
+<div style="text-align:center">
+
+![BezierControlModes](Annexes/BezierControlModes.gif)
+*Different control modes on the Bezier Spline*
+
+</div>
+
+
 ## Gameplay Implementation
 
 ## In the future:
-In the future, all this code will surely be ported to C++ on an house-made engine. The calculations to obtain the acceleration, the jerk/jolt at a time t, the patch will surely be implemented as well
+In the future, all this code will surely be ported to C++ on an house-made engine. The calculations to obtain the acceleration, the jerk/jolt at a time t, the patch will surely be implemented as well.
 
 ## References:
 General references:
